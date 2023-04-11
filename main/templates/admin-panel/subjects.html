@@ -1,0 +1,79 @@
+{% extends "admin-panel/base.html" %}
+{% load static %}
+
+{%block content%}
+    <table class="data">
+        <thead>
+            <th><input class="table-checkbox" type="checkbox" name="checkbox" onclick="switchAllCheckboxes()"></th>
+            <th>#</th>
+            <th>Имя предмета</th>
+            <th>Нагрузка в баллах</th>
+            <th>Классы</th>
+            <th class="no-border"></th>
+            <th class="no-border"></th>
+            <th class="no-border"></th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <input class="table-checkbox" type="checkbox" name="checkbox">
+                </td>
+                <td>3</td>
+                <td>
+                    <input class="edit-input" type="text" disabled value="Химия>" placeholder="Введите предмет">
+                </td>
+                <td>
+                    <input type="number" class="edit-input" placeholder="Введите нагрузку" value="20">
+                </td>
+                <td>
+                    <div class="select select--multiple">
+                        <select id="multi-select" multiple>
+                          <option value="1">5B</option>
+                          <option value="2">5A</option>
+                          <option value="3">6B</option>
+                          <option value="4">5A</option>
+                          <option value="5">7B</option>                          
+                        </select>
+                        <span class="focus"></span>
+                    </div>
+                </td>
+                <td class="no-border">
+                    <div class="confirm-action"></div>                    
+                </td>
+                <td class="no-border">
+                    <div class="cancel-action"></div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <input class="table-checkbox" type="checkbox" name="checkbox">
+                </td>
+                <td>2</td>
+                <td>
+                    <input class="edit-input" type="text" disabled value="Биология>" placeholder="Введите предмет">
+                </td>
+                <td>
+                    <input type="number" class="edit-input" placeholder="Введите нагрузку" value="10">
+                </td>
+                <td>
+                    <div class="select select--multiple">
+                        <select id="multi-select" multiple>
+                          <option value="1">5B</option>
+                          <option value="2">5A</option>
+                          <option value="3">6B</option>
+                          <option value="4">5A</option>
+                          <option value="5">7B</option>                          
+                        </select>
+                        <span class="focus"></span>
+                    </div>
+                </td>
+                <td class="no-border">
+                    <div class="edit-action"></div>                    
+                </td>
+                <td class="no-border"></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+{%endblock%}

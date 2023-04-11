@@ -14,6 +14,14 @@ from django.http import HttpResponseRedirect
 from .modules.utils import *
 
 # Create your views here.
+class IndexView(View):    
+    def get(self, request):        
+        return redirect(reverse("main:cabinets"))
+
+    def post(self, request):
+        return redirect(reverse("main:cabinets"))
+
+
 class RegisterView(View):
     form_class = MyUserCreationForm
     template_name = 'registration/register.html'
@@ -50,3 +58,73 @@ class LogoutView(View):
     def get(self, request):
         logout(request)
         return redirect('home')
+
+
+class CabinetView(View):    
+    template_name = 'admin-panel/cabinets.html'
+
+    def get(self, request):        
+        return render(request, self.template_name, {
+            
+        })
+
+    def post(self, request):
+        return render(request, self.template_name, {
+
+        })
+
+
+class ClassView(View):    
+    template_name = 'admin-panel/classes.html'
+
+    def get(self, request):        
+        return render(request, self.template_name, {
+            
+        })
+
+    def post(self, request):
+        return render(request, self.template_name, {
+
+        })
+    
+
+class SubjectView(View):    
+    template_name = 'admin-panel/subjects.html'
+
+    def get(self, request):        
+        return render(request, self.template_name, {
+            
+        })
+
+    def post(self, request):
+        return render(request, self.template_name, {
+
+        })
+    
+
+class TeacherView(View):    
+    template_name = 'admin-panel/teachers.html'
+
+    def get(self, request):        
+        return render(request, self.template_name, {
+            
+        })
+
+    def post(self, request):
+        return render(request, self.template_name, {
+
+        })
+    
+
+class ScheduleView(View):    
+    template_name = 'admin-panel/schedule.html'
+
+    def get(self, request):        
+        return render(request, self.template_name, {
+            
+        })
+
+    def post(self, request):
+        return render(request, self.template_name, {
+
+        })

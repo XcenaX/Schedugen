@@ -1,0 +1,47 @@
+{% extends "admin-panel/base.html" %}
+{% load static %}
+
+{%block content%}
+    <table class="data">
+        <thead>
+            <th><input class="table-checkbox" type="checkbox" name="checkbox" onclick="switchAllCheckboxes()"></th>
+            <th>#</th>
+            <th>Имя кабинета</th>
+            <th class="no-border"></th>
+            <th class="no-border"></th>
+            <th class="no-border"></th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <input class="table-checkbox" type="checkbox" name="checkbox">
+                </td>
+                <td>3</td>
+                <td>
+                    <input class="edit-input" type="text" value="102" placeholder="Введите имя кабинета">
+                </td>
+                <td class="no-border">
+                    <div class="confirm-action"></div>                    
+                </td>
+                <td class="no-border">
+                    <div class="cancel-action"></div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <input class="table-checkbox" type="checkbox" name="checkbox">
+                </td>
+                <td>2</td>
+                <td>
+                    <input class="edit-input" type="text" value="201" disabled placeholder="Введите имя кабинета">
+                </td>
+                <td class="no-border">
+                    <div class="edit-action"></div>                    
+                </td>
+                <td class="no-border"></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+{%endblock%}

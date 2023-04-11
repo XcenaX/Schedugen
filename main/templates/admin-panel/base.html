@@ -1,0 +1,52 @@
+{% load static %}
+{% load sass_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{%static 'css/base.css'%}">
+    <link href="{% sass_src 'css/select.scss' %}" rel="stylesheet" type="text/css" />
+    <script src="{%static 'js/functions.js'%}"></script>
+    {%block styles%}
+    {%endblock%}
+</head>
+<body>
+    <div class="header">
+        
+        <div class="title">Schedugen</div>
+        <div class="right-block">
+            <div class="signin">Войти</div>
+            <div class="logout">Выйти</div>
+        </div>        
+    </div>
+
+    <div class="main">
+        <div class="sidebar">
+            <div class="wrap">
+                <div class="item {%if cabinets_page%}active{%endif%}"><a href="{%url 'main:cabinets'%}">Кабинеты</a></div>
+                <div class="item {%if cabinets_page%}active{%endif%}"><a href="{%url 'main:classes'%}">Классы</a></div>
+                <div class="item {%if cabinets_page%}active{%endif%}"><a href="{%url 'main:subjects'%}">Предметы</a></div>
+                <div class="item {%if cabinets_page%}active{%endif%}"><a href="{%url 'main:teachers'%}">Учителя</a></div>                
+                <div class="item {%if cabinets_page%}active{%endif%}"><a href="{%url 'main:schedule'%}">Расписание</a></div>            
+            </div>
+            
+        </div>
+        <div class="content">
+            <div class="widgets">
+                <div class="arrow-block">❮</div>
+                <div class="arrow-block" style="margin-left: 1vh;">❯</div>
+                {%block buttons%}
+                    <div class="add-button">Добавить</div>
+                    <div class="delete-button">Удалить</div>
+                {%endblock%}
+            </div>
+            {%block content%}
+            {%endblock%}
+        </div>
+    </div>
+    
+</body>
+</html>

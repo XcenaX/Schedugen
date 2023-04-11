@@ -56,18 +56,17 @@ class MyUserManager(BaseUserManager):
         return self.create_user(password=password, **extra_fields)
 
 class MyUser(AbstractBaseUser, PermissionsMixin):
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
+    full_name = models.CharField(max_length=30)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    school = models.ForeignKey(School, on_delete=models.CASCADE)
+    #school = models.ForeignKey(School, on_delete=models.CASCADE)
 
     objects = MyUserManager()
 
     USERNAME_FIELD = 'id'
-    REQUIRED_FIELDS = ['first_name', 'last_name']
+    REQUIRED_FIELDS = ['full_name']
 
     class Meta:
         verbose_name = 'user'

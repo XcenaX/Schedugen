@@ -1,0 +1,99 @@
+{% extends "admin-panel/base.html" %}
+{% load static %}
+
+{%block content%}
+    <table class="data">
+        <thead>
+            <th><input class="table-checkbox" type="checkbox" name="checkbox" onclick="switchAllCheckboxes()"></th>
+            <th>#</th>
+            <th>ФИО учителя</th>
+            <th>Его классы</th>
+            <th>Его предметы</th>
+            <th class="no-border"></th>
+            <th class="no-border"></th>
+            <th class="no-border"></th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <input class="table-checkbox" type="checkbox" name="checkbox">
+                </td>
+                <td>3</td>
+                <td>
+                    <input class="edit-input" type="text" value="Ахматова Марина Сергеевна" placeholder="Введите ФИО учителя">
+                </td>
+                <td>
+                    <div class="select select--multiple">
+                        <select id="multi-select" multiple>
+                          <option value="1">5B</option>
+                          <option value="2">5A</option>
+                          <option value="3">6B</option>
+                          <option value="4">5A</option>
+                          <option value="5">7B</option>                          
+                        </select>
+                        <span class="focus"></span>
+                    </div>
+                </td>
+                <td>
+                    <div class="select select--multiple">
+                        <select multiple>
+                          <option value="1">Биология</option>
+                          <option value="2">Химия</option>
+                          <option value="3">Математика</option>
+                          <option value="4">Алгебра</option>
+                          <option value="5">Геометрия</option>                          
+                          <option value="6">Физика</option>                          
+                        </select>
+                        <span class="focus"></span>
+                    </div>
+                </td>
+                <td class="no-border">
+                    <div class="confirm-action"></div>                    
+                </td>
+                <td class="no-border">
+                    <div class="cancel-action"></div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <input class="table-checkbox" type="checkbox" name="checkbox">
+                </td>
+                <td>2</td>
+                <td>
+                    <input class="edit-input" type="text" disabled value="Кереев Кирилл Антонович" placeholder="Введите ФИО учителя">
+                </td>
+                <td>
+                    <div class="select select--multiple">
+                        <select id="multi-select" multiple>
+                          <option value="1">5B</option>
+                          <option value="2">5A</option>
+                          <option value="3">6B</option>
+                          <option value="4">5A</option>
+                          <option value="5">7B</option>                          
+                        </select>
+                        <span class="focus"></span>
+                    </div>
+                </td>
+                <td>
+                    <div class="select select--multiple">
+                        <select multiple>
+                          <option value="1">Биология</option>
+                          <option value="2">Химия</option>
+                          <option value="3">Математика</option>
+                          <option value="4">Алгебра</option>
+                          <option value="5">Геометрия</option>                          
+                          <option value="6">Физика</option>                          
+                        </select>
+                        <span class="focus"></span>
+                    </div>
+                </td>
+                <td class="no-border">
+                    <div class="edit-action"></div>                    
+                </td>
+                <td class="no-border"></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+{%endblock%}

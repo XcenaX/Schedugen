@@ -28,5 +28,5 @@ class MyUserCreationForm(UserCreationForm):
 
 
 class MyAuthenticationForm(AuthenticationForm):
-    class Meta(AuthenticationForm.Meta):
+    class Meta():
         model = MyUser

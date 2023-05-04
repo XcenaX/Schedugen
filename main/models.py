@@ -1,47 +1,5 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from django.db import models
-
-# Create your models here.
-class SchoolClass(models.Model):
-    class_name = models.CharField(max_length=100)
-    teacher = models.ForeignKey('Teacher', on_delete=models.CASCADE)
-    students = models.ManyToManyField('Student')
-    max_lessons_per_day = models.IntegerField(default=6)
-    max_lessons_per_week = models.IntegerField(default=30)
-
-    def __str__(self):
-        return self.class_name
-
-class Teacher(models.Model):
-    name = models.CharField(max_length=100)
-    specialization = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
-
-class Student(models.Model):
-    name = models.CharField(max_length=100)
-    school_class = models.ForeignKey('SchoolClass', on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.name
-
-class Classroom(models.Model):
-    room_number = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.room_number
-
-class Lesson(models.Model):
-    teacher = models.ForeignKey('Teacher', on_delete=models.CASCADE)
-    school_class = models.ForeignKey('SchoolClass', on_delete=models.CASCADE)
-    classroom = models.ForeignKey('Classroom', on_delete=models.CASCADE)
-    day = models.CharField(max_length=100)
-    time = models.TimeField()
-
-    def __str__(self):
-        return f'{self.teacher} - {self.school_class} ({self.classroom})'
-    
+from django.db import models    
 
 class MyUserManager(BaseUserManager):
     def create_user(self, password=None, **extra_fields):
@@ -74,3 +32,41 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+    
+
+class Group(models.Model):
+    name = models.CharField(max_length=100)    
+
+    def __str__(self):
+        return self.name
+
+class Subject(models.Model):
+    name = models.CharField(max_length=100)    
+
+    def __str__(self):
+        return self.name
+
+class Classroom(models.Model):
+    name = models.CharField(max_length=100)    
+
+    def __str__(self):
+        return self.name
+    
+    
+class Teacher(models.Model):
+    name = models.CharField(max_length=100)    
+
+    def __str__(self):
+        return self.name
+
+
+class Class(models.Model):
+    groups = models.ManyToManyField(Group)
+    teacher = models.ForeignKey('Teacher', on_delete=models.CASCADE)
+    subject = models.ForeignKey('Subject', on_delete=models.CASCADE)
+    #_type = models.CharField(choices=)
+    duration = models.IntegerField(default=1)
+    classrooms = models.ManyToManyField(Classroom)
+
+    def __str__(self):
+        return self.class_name

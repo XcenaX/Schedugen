@@ -8,18 +8,19 @@ from django.contrib import messages
 from .modules.hashutils import *
 import datetime
 from django.contrib.auth import authenticate, login, logout
+from rest_framework.filters import SearchFilter
 
 from django.http import HttpResponseRedirect
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.permissions import IsAuthenticated
+
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.views import APIView
 
 from .modules.utils import *
-
-# Create your views here.
-class IndexView(View):    
-    def get(self, request):        
-        return redirect(reverse("main:cabinets"))
-
-    def post(self, request):
-        return redirect(reverse("main:cabinets"))
+from .serializers import *
+from rest_framework import viewsets
 
 
 class RegisterView(View):
@@ -60,71 +61,36 @@ class LogoutView(View):
         return redirect('home')
 
 
-class CabinetView(View):    
-    template_name = 'admin-panel/cabinets.html'
+class GroupViewSet(viewsets.ModelViewSet):
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
 
-    def get(self, request):        
-        return render(request, self.template_name, {
-            
-        })
+class SubjectViewSet(viewsets.ModelViewSet):
+    queryset = Subject.objects.all()
+    serializer_class = SubjectSerializer
 
+class ClassroomViewSet(viewsets.ModelViewSet):
+    queryset = Classroom.objects.all()
+    serializer_class = ClassroomSerializer
+
+class TeacherViewSet(viewsets.ModelViewSet):
+    queryset = Teacher.objects.all()
+    serializer_class = TeacherSerializer
+
+class ClassViewSet(viewsets.ModelViewSet):
+    queryset = Class.objects.all()
+    serializer_class = ClassSerializer
+
+class ScheduleClassViewSet(viewsets.ModelViewSet):
+    queryset = ScheduleClass.objects.all()
+    serializer_class = ScheduleClassSerializer
+
+
+class ScheduleGenerationView(APIView):
     def post(self, request):
-        return render(request, self.template_name, {
-
-        })
-
-
-class ClassView(View):    
-    template_name = 'admin-panel/classes.html'
-
-    def get(self, request):        
-        return render(request, self.template_name, {
-            
-        })
-
-    def post(self, request):
-        return render(request, self.template_name, {
-
-        })
-    
-
-class SubjectView(View):    
-    template_name = 'admin-panel/subjects.html'
-
-    def get(self, request):        
-        return render(request, self.template_name, {
-            
-        })
-
-    def post(self, request):
-        return render(request, self.template_name, {
-
-        })
-    
-
-class TeacherView(View):    
-    template_name = 'admin-panel/teachers.html'
-
-    def get(self, request):        
-        return render(request, self.template_name, {
-            
-        })
-
-    def post(self, request):
-        return render(request, self.template_name, {
-
-        })
-    
-
-class ScheduleView(View):    
-    template_name = 'admin-panel/schedule.html'
-
-    def get(self, request):        
-        return render(request, self.template_name, {
-            
-        })
-
-    def post(self, request):
-        return render(request, self.template_name, {
-
-        })
+        # код составления расписания
+        
+        
+        return Response({"message": "Расписание успешно составлено"}, status=status.HTTP_200_OK)
+        # Если произошла ошибка при составлении расписания
+        # return Response({"message": "Произошла ошибка при составлении расписания"}, status=status.HTTP_400_BAD_REQUEST)

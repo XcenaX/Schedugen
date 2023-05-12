@@ -306,7 +306,7 @@ def simulated_hardening(matrix, data, free, filled, groups_empty_space, teachers
     write_solution_to_file(matrix, data, filled, file, groups_empty_space, teachers_empty_space, subjects_order)
 
 
-def main():
+def main(data=None):
     """
     free = [(row, column)...] - list of free fields (row, column) in matrix
     filled: dictionary where key = index of the class, value = list of fields in matrix
@@ -325,7 +325,9 @@ def main():
     teachers_empty_space = {}
     file = 'ulaz1.txt'
 
-    data = load_data('test_files/' + file, teachers_empty_space, groups_empty_space, subjects_order)
+    if not data:
+        data = load_data('test_files/' + file, teachers_empty_space, groups_empty_space, subjects_order)
+        
     matrix, free = set_up(len(data.classrooms))
     initial_population(data, matrix, free, filled, groups_empty_space, teachers_empty_space, subjects_order)
 

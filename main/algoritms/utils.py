@@ -1,10 +1,10 @@
 import json
 import random
 import datetime
-from costs import check_hard_constraints, subjects_order_cost, empty_space_groups_cost, empty_space_teachers_cost, \
+from .costs import check_hard_constraints, subjects_order_cost, empty_space_groups_cost, empty_space_teachers_cost, \
     free_hour, WORK_HOURS, WORK_DAYS
 from ..models import Class, Classroom
-from model import Data
+from .model import Data
 
 
 # ММММ

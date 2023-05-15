@@ -1,7 +1,7 @@
 import random
 from operator import itemgetter
-from utils import load_data, show_timetable, set_up, show_statistics, write_solution_to_file, show_timetable_for_groups, get_schedule_for_groups
-from costs import check_hard_constraints, hard_constraints_cost, empty_space_groups_cost, empty_space_teachers_cost, \
+from .utils import load_data, show_timetable, set_up, show_statistics, write_solution_to_file, show_timetable_for_groups, get_schedule_for_groups
+from .costs import check_hard_constraints, hard_constraints_cost, empty_space_groups_cost, empty_space_teachers_cost, \
     free_hour, WORK_HOURS, WORK_DAYS
 import copy
 import math

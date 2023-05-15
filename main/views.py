@@ -22,7 +22,7 @@ from .modules.utils import *
 from .serializers import *
 from rest_framework import viewsets
 
-from algoritms.scheduler import main as make_schedule
+from .algoritms.scheduler import main as make_schedule
 
 
 class RegisterView(View):

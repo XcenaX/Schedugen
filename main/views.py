@@ -22,6 +22,8 @@ from .modules.utils import *
 from .serializers import *
 from rest_framework import viewsets
 
+from algoritms.scheduler import main as make_schedule
+
 
 class RegisterView(View):
     form_class = MyUserCreationForm
@@ -89,8 +91,8 @@ class ScheduleClassViewSet(viewsets.ModelViewSet):
 class ScheduleGenerationView(APIView):
     def post(self, request):
         # код составления расписания
-        
-        
+        data = Class.objects.all()
+        schedule = make_schedule(data)
         return Response({"message": "Расписание успешно составлено"}, status=status.HTTP_200_OK)
         # Если произошла ошибка при составлении расписания
         # return Response({"message": "Произошла ошибка при составлении расписания"}, status=status.HTTP_400_BAD_REQUEST)

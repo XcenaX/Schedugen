@@ -306,7 +306,37 @@ def simulated_hardening(matrix, data, free, filled, groups_empty_space, teachers
     write_solution_to_file(matrix, data, filled, file, groups_empty_space, teachers_empty_space, subjects_order)
 
 
-def main(data=None):
+def make_schedule(data):
+    """
+    main method but with current db
+    """
+    filled = {}
+    subjects_order = {}
+    groups_empty_space = {}
+    teachers_empty_space = {}
+    
+    data = load_data('test_files/' + file, teachers_empty_space, groups_empty_space, subjects_order)
+        
+    matrix, free = set_up(len(data.classrooms))
+    initial_population(data, matrix, free, filled, groups_empty_space, teachers_empty_space, subjects_order)
+
+    total, _, _, _, _ = hard_constraints_cost(matrix, data)
+    print('Initial cost of hard constraints: {}'.format(total))
+
+    evolutionary_algorithm(matrix, data, free, filled, groups_empty_space, teachers_empty_space, subjects_order)
+    print('STATISTICS')
+    show_statistics(matrix, data, subjects_order, groups_empty_space, teachers_empty_space)
+        
+    simulated_hardening(matrix, data, free, filled, groups_empty_space, teachers_empty_space, subjects_order, file)
+
+    print("TIMETABLE FOR GROUPS OY DA:\n") # ВОТ ТУТ ВСЕ ВЫВОДИТСЯ
+
+    groups_matrix = get_schedule_for_groups(data, matrix)
+    show_timetable_for_groups(data, groups_matrix)
+
+
+
+def main():
     """
     free = [(row, column)...] - list of free fields (row, column) in matrix
     filled: dictionary where key = index of the class, value = list of fields in matrix
@@ -325,8 +355,8 @@ def main(data=None):
     teachers_empty_space = {}
     file = 'ulaz1.txt'
 
-    if not data:
-        data = load_data('test_files/' + file, teachers_empty_space, groups_empty_space, subjects_order)
+    
+    data = load_data('test_files/' + file, teachers_empty_space, groups_empty_space, subjects_order)
         
     matrix, free = set_up(len(data.classrooms))
     initial_population(data, matrix, free, filled, groups_empty_space, teachers_empty_space, subjects_order)

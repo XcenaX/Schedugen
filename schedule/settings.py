@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'drf_yasg',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -49,7 +50,32 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
+
+CORS_ALLOWED_ORIGINS = ["*"]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_METHODS = [
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'OPTIONS',
+]
+
+CORS_ALLOWED_HEADERS = [
+    'Authorization',
+    'Content-Type',
+]
+
+SWAGGER_SETTINGS = {    
+    'DEFAULT_API_URL': 'http://schedugen.pythonanywhere.com/api/',
+    #'DEFAULT_API_AUTHENTICATION_CLASS': 'rest_framework.authentication.TokenAuthentication',
+}
 
 ROOT_URLCONF = 'schedule.urls'
 

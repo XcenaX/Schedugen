@@ -68,6 +68,8 @@ class Class(models.Model):
     #_type = models.CharField(choices=)
     duration = models.IntegerField(default=1)
     classrooms = models.ManyToManyField(Classroom)
+    max_lessons = models.IntegerField(default=1)
+    points = models.IntegerField(default=1)
 
     def __str__(self):
         return self.class_name

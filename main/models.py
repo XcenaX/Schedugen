@@ -55,6 +55,8 @@ class Classroom(models.Model):
     
 class Teacher(models.Model):
     name = models.CharField(max_length=100)    
+    classrooms = models.ManyToManyField(Classroom)
+    groups = models.ManyToManyField(Group)
 
     def __str__(self):
         return self.name

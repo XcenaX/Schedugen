@@ -64,26 +64,32 @@ class LogoutView(View):
 
 
 class GroupViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
 class SubjectViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Subject.objects.all()
     serializer_class = SubjectSerializer
 
 class ClassroomViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Classroom.objects.all()
     serializer_class = ClassroomSerializer
 
 class TeacherViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Teacher.objects.all()
     serializer_class = TeacherSerializer
 
 class ClassViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Class.objects.all()
     serializer_class = ClassSerializer
 
 class ScheduleClassViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = ScheduleClass.objects.all()
     serializer_class = ScheduleClassSerializer
 

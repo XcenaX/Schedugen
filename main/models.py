@@ -1,38 +1,8 @@
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from django.db import models    
+from django.db import models
+from django.contrib.auth.models import UserManager, AbstractUser
 
-class MyUserManager(BaseUserManager):
-    def create_user(self, password=None, **extra_fields):
-        user = self.model(**extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        return self.create_user(password=password, **extra_fields)
-
-class MyUser(AbstractBaseUser, PermissionsMixin):
-    full_name = models.CharField(max_length=30)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    #school = models.ForeignKey(School, on_delete=models.CASCADE)
-
-    objects = MyUserManager()
-
-    USERNAME_FIELD = 'id'
-    REQUIRED_FIELDS = ['full_name']
-
-    class Meta:
-        verbose_name = 'user'
-        verbose_name_plural = 'users'
-
-    def __str__(self):
-        return f"{self.first_name} {self.last_name}"
-    
+# class CustomUser(AbstractUser):
+#     pass
 
 class Group(models.Model):
     name = models.CharField(max_length=100)    

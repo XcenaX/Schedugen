@@ -1,14 +1,14 @@
 from django import forms
-from .models import MyUser
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 
 
 class MyUserCreationForm(UserCreationForm):
     login = forms.CharField(max_length=30)
 
     class Meta:
-        model = MyUser
+        model = User
         fields = ('login', 'password')
 
     def clean_login(self):
@@ -29,4 +29,4 @@ class MyUserCreationForm(UserCreationForm):
 
 class MyAuthenticationForm(AuthenticationForm):
     class Meta():
-        model = MyUser
+        model = User

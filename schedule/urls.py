@@ -32,8 +32,9 @@ urlpatterns = [
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     
-    # Получение JWT-токена
+    # Получение JWT-токена    
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/login/', TokenObtainPairView.as_view(), name='login'),
     # Обновление JWT-токена
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     # Добавьте ваши собственные пути для вашего API

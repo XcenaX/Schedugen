@@ -99,7 +99,7 @@ def load_data(file_path, teachers_empty_space, groups_empty_space, subjects_orde
     return Data(groups, teachers, classes, classrooms)
 
 
-def load_data2(teachers_empty_space, groups_empty_space, subjects_order):
+def load_data2(teachers_empty_space, groups_empty_space):
     data_classes = Class.objects.all()
     data_classrooms = Classroom.objects.all()
 
@@ -142,7 +142,7 @@ def load_data2(teachers_empty_space, groups_empty_space, subjects_order):
         
         for group in new_group:
             for i in range(max_lessons):
-                new = Class(group, new_teacher, cl['Subject'], cl['Type'], cl['Duration'], cl['Classroom'], cl["MaxLessons"], cl["Points"])
+                new = Class(group, new_teacher, cl.subject.name, cl.duration, cl.classrooms.all(), cl.max_lessons, cl.points)
                 class_list.append(new)
 
     # shuffle mostly because of teachers
@@ -154,26 +154,26 @@ def load_data2(teachers_empty_space, groups_empty_space, subjects_order):
     
 
     # every class has a list of groups marked by its index, same for classrooms
-    for i in classes:
-        cl = classes[i]
+    # for i in classes:
+    #     cl = classes[i]
 
-        classroom = cl.classrooms
-        index_classrooms = []
-        # add classrooms
-        for index, c in classrooms.items():
-            if c.type == classroom:
-                index_classrooms.append(index)
-        cl.classrooms = index_classrooms
+    #     classroom = cl.classrooms
+    #     index_classrooms = []
+    #     # add classrooms
+    #     for index, c in classrooms.items():
+    #         if c.type == classroom:
+    #             index_classrooms.append(index)
+    #     cl.classrooms = index_classrooms
 
-        class_groups = cl.groups
-        index_groups = []
-        for name, index in groups.items():
-            if name in class_groups:
-                # initialise order of subjects
-                if (cl.subject, index) not in subjects_order:
-                    subjects_order[(cl.subject, index)] = [-1, -1, -1]
-                index_groups.append(index)
-        cl.groups = index_groups
+    #     class_groups = cl.groups.all()
+    #     index_groups = []
+    #     for name, index in groups.items():
+    #         if name in class_groups:
+    #             # initialise order of subjects
+    #             if (cl.subject, index) not in subjects_order:
+    #                 subjects_order[(cl.subject, index)] = [-1, -1, -1]
+    #             index_groups.append(index)
+    #     cl.groups = index_groups
 
     return Data(groups, teachers, classes, classrooms)
 
@@ -463,7 +463,7 @@ def write_solution_to_file(matrix, data, filled, filepath, groups_empty_space, t
     f.close()
 
 
-def show_statistics(matrix, data, subjects_order, groups_empty_space, teachers_empty_space):
+def show_statistics(matrix, data, groups_empty_space, teachers_empty_space):
     """
     Prints statistics.
     """
@@ -472,7 +472,7 @@ def show_statistics(matrix, data, subjects_order, groups_empty_space, teachers_e
         print('Hard constraints satisfied: 100.00 %')
     else:
         print('Hard constraints NOT satisfied, cost: {}'.format(cost_hard))
-    print('Soft constraints satisfied: {:.02f} %\n'.format(subjects_order_cost(subjects_order)))
+    # print('Soft constraints satisfied: {:.02f} %\n'.format(subjects_order_cost(subjects_order)))
 
     empty_groups, max_empty_group, average_empty_groups = empty_space_groups_cost(groups_empty_space)
     print('TOTAL empty space for all GROUPS and all days: ', empty_groups)

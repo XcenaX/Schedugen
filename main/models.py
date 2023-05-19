@@ -58,3 +58,10 @@ class ScheduleClass(models.Model):
 
     def __str__(self):
         return self.class_name
+    
+
+class TestTable(models.Model):
+    name = models.TextField(default="")
+
+    def __str__(self):
+        return self.class_name

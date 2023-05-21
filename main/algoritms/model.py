@@ -24,6 +24,15 @@ class Class:
         self.max_lessons = max_lessons
         self.points = points
 
+
+    def __to_dict__(self):
+        return {            
+            "teacher": self.teacher,
+            "subject": self.subject,           
+            "max_lessons": self.max_lessons,
+            "points": self.points
+        }
+
     def __str__(self):
         return "Groups {} | Teacher '{}' | Subject '{}' | {} hours | Classrooms {} \n"\
             .format(self.groups, self.teacher, self.subject, self.duration, self.classrooms)

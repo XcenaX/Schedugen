@@ -4,6 +4,17 @@ from django.contrib.auth.models import UserManager, AbstractUser
 # class CustomUser(AbstractUser):
 #     pass
 
+WEEK_DAY = {
+    0: 'Понедельник',
+    1: 'Вторник',
+    2: 'Среда',
+    3: 'Четверг',
+    4: 'Пятница',
+    5: 'Суббота',
+    6: 'Воскресенье'
+}
+
+
 class Group(models.Model):
     name = models.CharField(max_length=100)    
 
@@ -44,7 +55,10 @@ class Class(models.Model):
     points = models.IntegerField(default=1)
 
     def __str__(self):
-        return self.class_name
+        groups_str = ""
+        for group in self.groups.all():
+            groups_str += group.name + ", "
+        return self.subject.name + " | " + groups_str
     
 
 # Это таблица для показа расписания
@@ -57,7 +71,7 @@ class ScheduleClass(models.Model):
     classroom = models.ForeignKey('Classroom', on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.class_name
+        return WEEK_DAY[self.weekday] + " | " + str(self.lesson_index) + " урок | " + self.group.name
     
 
 class TestTable(models.Model):

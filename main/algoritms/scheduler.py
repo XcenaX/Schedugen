@@ -16,6 +16,7 @@ def initial_population(data, matrix, free, filled, groups_empty_space, teachers_
     classes = data.classes
 
     for index, classs in classes.items():
+        print("classs.classrooms: ", classs.classrooms)
         ind = 0
         # ind = random.randrange(len(free) - int(classs.duration))
         while True:
@@ -30,12 +31,12 @@ def initial_population(data, matrix, free, filled, groups_empty_space, teachers_
 
             found = True
             # проверяем свободен ли весь блок для класса
-            for i in range(1, int(classs.duration)):
-                field = (i + start_time, start_field[1])
-                if field not in free:
-                    found = False
-                    ind += 1
-                    break
+            # for i in range(1, int(classs.duration)):
+            #     field = (i + start_time, start_field[1])
+            #     if field not in free:
+            #         found = False
+            #         ind += 1
+            #         break
 
             # подходит ли кабинет 
             if start_field[1] not in classs.classrooms:
@@ -205,8 +206,8 @@ def evolutionary_algorithm(matrix, data, free, filled, groups_empty_space, teach
             # check if optimal solution is found
             loss_before, cost_classes, cost_teachers, cost_classrooms, cost_groups = hard_constraints_cost(matrix, data)
             if loss_before == 0 and check_hard_constraints(matrix, data) == 0:
-                print('Found optimal solution: \n')
-                show_timetable(matrix)
+                # print('Found optimal solution: \n')
+                # show_timetable(matrix)
                 break
 
             # sort classes by their loss, [(loss, class index)]
@@ -242,8 +243,8 @@ def evolutionary_algorithm(matrix, data, free, filled, groups_empty_space, teach
                     sigma /= 0.85
                 cost_stats = 0
 
-        print('Number of iterations: {} \nCost: {} \nTeachers cost: {} | Groups cost: {} | Classrooms cost:'
-              ' {}'.format(t, loss_after, cost_teachers, cost_groups, cost_classrooms))
+            # print('Number of iterations: {} \nCost: {} \nTeachers cost: {} | Groups cost: {} | Classrooms cost:'
+              # ' {}'.format(t, loss_after, cost_teachers, cost_groups, cost_classrooms))
 
 
 def simulated_hardening(matrix, data, free, filled, groups_empty_space, teachers_empty_space):
@@ -297,9 +298,9 @@ def simulated_hardening(matrix, data, free, filled, groups_empty_space, teachers
         if i % 100 == 0:
             print('Iteration: {:4d} | Average cost: {:0.8f}'.format(i, curr_cost))
 
-    print('TIMETABLE AFTER HARDENING')
-    show_timetable(matrix)
-    print('STATISTICS AFTER HARDENING')
+    # print('TIMETABLE AFTER HARDENING')
+    # show_timetable(matrix)
+    # print('STATISTICS AFTER HARDENING')
     show_statistics(matrix, data, groups_empty_space, teachers_empty_space)
     # write_solution_to_file(matrix, data, filled, file, groups_empty_space, teachers_empty_space)
 
@@ -312,21 +313,24 @@ def make_schedule(data):
     groups_empty_space = {}
     teachers_empty_space = {}
     
-    data = load_data2(teachers_empty_space, groups_empty_space)
+    data, groups_empty_space, teachers_empty_space = load_data2(teachers_empty_space, groups_empty_space)
+
+    print("groups_empty_space: ", groups_empty_space)
         
     matrix, free = set_up(len(data.classrooms))
     initial_population(data, matrix, free, filled, groups_empty_space, teachers_empty_space)
 
     total, _, _, _, _ = hard_constraints_cost(matrix, data)
-    print('Initial cost of hard constraints: {}'.format(total))
+    # print('Initial cost of hard constraints: {}'.format(total))
 
     evolutionary_algorithm(matrix, data, free, filled, groups_empty_space, teachers_empty_space)
-    print('STATISTICS')
-    show_statistics(matrix, data, groups_empty_space, teachers_empty_space)
+    # print('STATISTICS')
+    # show_statistics(matrix, data, groups_empty_space, teachers_empty_space)
         
     simulated_hardening(matrix, data, free, filled, groups_empty_space, teachers_empty_space)
 
-    print("TIMETABLE FOR GROUPS OY DA:\n") # ВОТ ТУТ ВСЕ ВЫВОДИТСЯ
+    # print("TIMETABLE FOR GROUPS OY DA:\n") # ВОТ ТУТ ВСЕ ВЫВОДИТСЯ
 
     groups_matrix = get_schedule_for_groups(data, matrix)
-    show_timetable_for_groups(data, groups_matrix)
+    # show_timetable_for_groups(data, groups_matrix)
+    return groups_matrix    

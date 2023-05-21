@@ -5,6 +5,7 @@ from .costs import check_hard_constraints, subjects_order_cost, empty_space_grou
     free_hour, WORK_HOURS, WORK_DAYS
 from ..models import Class, Classroom
 from .model import Data
+from .model import Class as Class2
 
 
 # ММММ
@@ -63,7 +64,7 @@ def load_data(file_path, teachers_empty_space, groups_empty_space, subjects_orde
         
         for group in new_group:
             for i in range(max_lessons):
-                new = Class(group, new_teacher, cl['Subject'], cl['Type'], cl['Duration'], cl['Classroom'], cl["MaxLessons"], cl["Points"])
+                new = Class2(group, new_teacher, cl['Subject'], cl['Type'], cl['Duration'], cl['Classroom'], cl["MaxLessons"], cl["Points"])
                 class_list.append(new)
 
     # shuffle mostly because of teachers
@@ -131,10 +132,10 @@ def load_data2(teachers_empty_space, groups_empty_space):
         
         # add groups
         for group in new_group:
-            if group not in groups:
-                groups[group] = len(groups)
+            if group.name not in groups:
+                groups[group.name] = len(groups)
                 # initialise for empty space of groups
-                groups_empty_space[groups[group]] = []
+                groups_empty_space[groups[group.name]] = []
             
         # add teacher
         if new_teacher not in teachers:
@@ -142,84 +143,10 @@ def load_data2(teachers_empty_space, groups_empty_space):
         
         for group in new_group:
             for i in range(max_lessons):
-                new = Class(group, new_teacher, cl.subject.name, cl.duration, cl.classrooms.all(), cl.max_lessons, cl.points)
-                class_list.append(new)
-
-    # shuffle mostly because of teachers
-    random.shuffle(class_list)
-    # add classrooms
-    for cl in class_list:
-        classes[len(classes)] = cl
-
-    
-
-    # every class has a list of groups marked by its index, same for classrooms
-    # for i in classes:
-    #     cl = classes[i]
-
-    #     classroom = cl.classrooms
-    #     index_classrooms = []
-    #     # add classrooms
-    #     for index, c in classrooms.items():
-    #         if c.type == classroom:
-    #             index_classrooms.append(index)
-    #     cl.classrooms = index_classrooms
-
-    #     class_groups = cl.groups.all()
-    #     index_groups = []
-    #     for name, index in groups.items():
-    #         if name in class_groups:
-    #             # initialise order of subjects
-    #             if (cl.subject, index) not in subjects_order:
-    #                 subjects_order[(cl.subject, index)] = [-1, -1, -1]
-    #             index_groups.append(index)
-    #     cl.groups = index_groups
-
-    return Data(groups, teachers, classes, classrooms)
-
-def get_proper_data():
-    # classes: dictionary where key = index of a class, value = class
-    classes = {}
-    # classrooms: dictionary where key = index, value = classroom name
-    classrooms = {}
-    # teachers: dictionary where key = teachers' name, value = index
-    teachers = {}
-    # groups: dictionary where key = name of the group, value = index
-    groups = {}
-    class_list = [] 
-
-    # every class is assigned a list of classrooms he can be in as indexes (later columns of matrix)
-    for type in data['Classrooms']:
-        for name in data['Classrooms'][type]:
-            new = Classroom(name, type)
-            classrooms[len(classrooms)] = new    
-
-
-    for cl in data['Classes']:
-        new_group = cl['Group']
-        new_teacher = cl['Teacher']
-        max_lessons = cl['MaxLessons']
-
-        # initialise for empty space of teachers
-        if new_teacher not in teachers_empty_space:
-            teachers_empty_space[new_teacher] = []
-
-        # new = Class(new_group, new_teacher, cl['Subject'], cl['Type'], cl['Duration'], cl['Classroom'],  workloads[int(cl["Workload"])])
-        
-        # add groups
-        for group in new_group:
-            if group not in groups:
-                groups[group] = len(groups)
-                # initialise for empty space of groups
-                groups_empty_space[groups[group]] = []
-            
-        # add teacher
-        if new_teacher not in teachers:
-            teachers[new_teacher] = len(teachers)
-        
-        for group in new_group:
-            for i in range(max_lessons):
-                new = Class(group, new_teacher, cl['Subject'], cl['Type'], cl['Duration'], cl['Classroom'], cl["MaxLessons"], cl["Points"])
+                classrooms_ids = []
+                for clroom in cl.classrooms.all():
+                    classrooms_ids.append(clroom.id)
+                new = Class2(group.name, new_teacher, cl.subject.name, cl.duration, classrooms_ids, cl.max_lessons, cl.points)
                 class_list.append(new)
 
     # shuffle mostly because of teachers
@@ -238,21 +165,19 @@ def get_proper_data():
         index_classrooms = []
         # add classrooms
         for index, c in classrooms.items():
-            if c.type == classroom:
-                index_classrooms.append(index)
+            #if c.type == classroom:
+            index_classrooms.append(index)
         cl.classrooms = index_classrooms
 
         class_groups = cl.groups
         index_groups = []
         for name, index in groups.items():
-            if name in class_groups:
-                # initialise order of subjects
-                if (cl.subject, index) not in subjects_order:
-                    subjects_order[(cl.subject, index)] = [-1, -1, -1]
+            if name in class_groups:                
                 index_groups.append(index)
         cl.groups = index_groups
 
-    return Data(groups, teachers, classes, classrooms)
+    return Data(groups, teachers, classes, classrooms), groups_empty_space, teachers_empty_space
+
 
 def set_up(num_of_columns):
     """
@@ -313,12 +238,18 @@ def get_schedule_for_group(data, matrix, group: str):
         if not group_schedule.get(i // WORK_HOURS):
             group_schedule[i // WORK_HOURS] = []
 
+        founded = False
+
         for j in range(len(matrix[i])):
             if matrix[i][j] is not None:
                 if get_group_by_index(data.groups, data.classes[matrix[i][j]].groups[0]) == group:
-                    group_schedule[i // WORK_HOURS].append(data.classes[matrix[i][j]])
-            else:
-                group_schedule[i // WORK_HOURS].append(None)
+                    class_info = data.classes[matrix[i][j]].__to_dict__()
+                    class_info["classroom"] = data.classrooms[j].name
+                    class_info["group"] = group
+                    group_schedule[i // WORK_HOURS].append(class_info)
+                    founded = True
+        if not founded:
+            group_schedule[i // WORK_HOURS].append(None)
     return group_schedule
 
 

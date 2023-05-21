@@ -22,6 +22,7 @@ from .modules.utils import *
 from .serializers import *
 from rest_framework import viewsets
 
+from .algoritms.functions import add_schedule_to_db
 #
 from .algoritms.scheduler import make_schedule
 
@@ -96,6 +97,19 @@ class ScheduleGenerationView(APIView):
         # код составления расписания
         data = Class.objects.all()
         schedule = make_schedule(data)
-        return Response({"message": "Расписание успешно составлено"}, status=status.HTTP_200_OK)
+
+        ScheduleClass.objects.all().delete()
+        add_schedule_to_db(schedule)
+
+        return Response({"message": "Расписание успешно составлено и добавлено в бд", "data": schedule}, status=status.HTTP_200_OK)
         # Если произошла ошибка при составлении расписания
         # return Response({"message": "Произошла ошибка при составлении расписания"}, status=status.HTTP_400_BAD_REQUEST)
+    def get(self, request):
+        # код составления расписания
+        data = Class.objects.all()
+        schedule = make_schedule(data)
+
+        ScheduleClass.objects.all().delete()
+        add_schedule_to_db(schedule)
+
+        return Response({"message": "Расписание успешно составлено и добавлено в бд", "data": schedule}, status=status.HTTP_200_OK)

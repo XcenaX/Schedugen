@@ -28,8 +28,8 @@ def add_schedule_to_db(schedule):
                 lesson_index += 1
 
 
-def get_or_none(model_or_qs, **kwargs):
+def get_or_none(classmodel, **kwargs):
     try:
-        return get_object_or_404(model_or_qs, **kwargs)
-    except Http404:
+        return classmodel.objects.get(**kwargs)
+    except classmodel.DoesNotExist:
         return None

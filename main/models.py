@@ -245,10 +245,10 @@ class Teacher(models.Model):
 
 # Это таблица для составления расписания
 class Class(models.Model):
-    groups = models.ManyToManyField(Group)
-    teacher = models.ForeignKey('Teacher', on_delete=models.CASCADE)
-    subject = models.ForeignKey('Subject', on_delete=models.CASCADE)        
-    classrooms = models.ManyToManyField(Classroom)
+    groups = models.ManyToManyField(Group, blank=True, null=True)
+    teacher = models.ForeignKey('Teacher', on_delete=models.CASCADE, blank=True, null=True)
+    subject = models.ForeignKey('Subject', on_delete=models.CASCADE, blank=True, null=True)        
+    classrooms = models.ManyToManyField(Classroom, blank=True, null=True)
     max_lessons = models.IntegerField(default=1)
     points = models.IntegerField(default=1)
 
@@ -256,7 +256,10 @@ class Class(models.Model):
         groups_str = ""
         for group in self.groups.all():
             groups_str += group.name + ", "
-        return self.subject.name + " | " + groups_str
+        try:
+            return self.subject.name + " | " + groups_str
+        except:
+            return "Class " + str(self.id)
     
 
 # Это таблица для показа расписания

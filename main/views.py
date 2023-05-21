@@ -22,7 +22,7 @@ from .modules.utils import *
 from .serializers import *
 from rest_framework import viewsets
 
-from .algoritms.functions import add_schedule_to_db
+from .algoritms.functions import add_schedule_to_db, get_object_or_404
 #
 from .algoritms.scheduler import make_schedule
 
@@ -90,6 +90,70 @@ class ScheduleClassViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = ScheduleClass.objects.all()
     serializer_class = ScheduleClassSerializer
+
+
+class SanPinInitialDataView(APIView):
+    def post(self, request):
+        # для ускорения заполнения всех полей тут добавляются все самые основные данные оп санпину
+        Class.objects.all().delete()
+
+        for class_number, workloads in WORK_LOAD.items():
+            groups = []
+            for group in Group.objects.all():
+                if group.name.startswith(class_number) and class_number.__len__() + 1 == group.name.__len__():
+                    groups.append(group)
+
+            for subject, workload in workloads.items():
+                subject_obj = Subject.objects.filter(name__iexact=subject.lower()).first()
+                if not get_object_or_404(Subject, name__iexact=subject.lower()):
+                    subject_obj = Subject.objects.create(name=subject)
+                    subject_obj.save()
+                
+                
+                new_class = Class.objects.create(
+                                    subject=subject_obj,
+                                    points=workload)
+                for group in groups:
+                    new_class.groups.add(group)
+                for classroom in Classroom.objects.all():
+                    new_class.classrooms.add(classroom)
+                new_class.save()
+
+        return Response({"message": "Успешно!"}, status=status.HTTP_200_OK)
+        
+    def get(self, request):
+        # для ускорения заполнения всех полей тут добавляются все самые основные данные оп санпину
+        Class.objects.all().delete()
+        
+        for class_number, workloads in WORK_LOAD.items():
+            groups = []
+            for group in Group.objects.all():
+                if group.name.startswith(class_number) and class_number.__len__() + 1 == group.name.__len__():
+                    groups.append(group)
+
+            for subject, workload in workloads.items():
+                subject_obj = Subject.objects.filter(name__iexact=subject.lower()).first()
+                if not Subject.objects.filter(name__iexact=subject.lower()):
+                    subject_obj = Subject.objects.create(name=subject)
+                    subject_obj.save()
+                
+                
+                new_class = Class.objects.create(
+                                    subject=subject_obj,
+                                    points=workload)
+                for group in groups:
+                    new_class.groups.add(group)
+                for classroom in Classroom.objects.all():
+                    new_class.classrooms.add(classroom)
+                new_class.save()
+                
+
+
+
+        return Response({"message": "Успешно!"}, status=status.HTTP_200_OK)
+        # Если произошла ошибка при составлении расписания
+        # return Response({"message": "Произошла ошибка при составлении расписания"}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class ScheduleGenerationView(APIView):

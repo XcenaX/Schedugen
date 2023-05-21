@@ -155,6 +155,21 @@ class SanPinInitialDataView(APIView):
         # return Response({"message": "Произошла ошибка при составлении расписания"}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class RandomlySetupTeachers(APIView):
+    def get(self, request):
+        # рандомно раскидывает учителей по предметам, нужно для тестов        
+        teachers = Teacher.objects.all()
+        subjects = Subject.objects.all()
+        index = 0
+        for subject in subjects:
+            classes = Class.objects.filter(subject=subject)
+            for _class in classes:
+                _class.teacher = teachers[0]
+            index += 1
+
+
+        return Response({"message": "Успешно!"}, status=status.HTTP_200_OK)
+
 
 class ScheduleGenerationView(APIView):
     def post(self, request):

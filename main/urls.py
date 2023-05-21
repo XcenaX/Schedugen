@@ -17,7 +17,9 @@ urlpatterns = [
     path('', include(router.urls)),
 
     path('generate', views.ScheduleGenerationView.as_view(), name='generate'), 
-    path('initial_workload', views.SanPinInitialDataView.as_view(), name='initial_workload'), 
+    path('initial_workload', views.SanPinInitialDataView.as_view(), name='initial_workload'),
+    path('random_setup_teachers', views.RandomlySetupTeachers.as_view(), name='random_setup_teachers'),
+    
     
     path('login', views.LoginView.as_view(), name='login'), 
     path('logout', views.LogoutView.as_view(), name='logout'), 

@@ -165,6 +165,7 @@ class RandomlySetupTeachers(APIView):
             classes = Class.objects.filter(subject=subject)
             for _class in classes:
                 _class.teacher = teachers[0]
+                _class.save()
             index += 1
 
 

@@ -146,7 +146,7 @@ def load_data2(teachers_empty_space, groups_empty_space):
                 classrooms_ids = []
                 for clroom in cl.classrooms.all():
                     classrooms_ids.append(clroom.id)
-                new = Class2(group.name, new_teacher, cl.subject.name, cl.duration, classrooms_ids, cl.max_lessons, cl.points)
+                new = Class2(group.name, new_teacher, cl.subject.name, classrooms_ids, cl.max_lessons, cl.points)
                 class_list.append(new)
 
     # shuffle mostly because of teachers
@@ -384,8 +384,8 @@ def write_solution_to_file(matrix, data, filled, filepath, groups_empty_space, t
         for g in c.groups:
             groups += groups_dict[g] + ', '
         f.write('\n\nClass {}\n'.format(class_index))
-        f.write('Teacher: {} \nSubject: {} \nGroups:{} \nType: {} \nDuration: {} hour(s)'
-                .format(c.teacher, c.subject, groups[:len(groups) - 2], c.type, c.duration))
+        f.write('Teacher: {} \nSubject: {} \nGroups:{} \nType: {}'
+                .format(c.teacher, c.subject, groups[:len(groups) - 2], c.type))
         room = str(data.classrooms[times[0][1]])
         f.write('\nClassroom: {:2s}\nTime: {}'.format(room[:room.rfind('-')], days[times[0][0] // WORK_HOURS]))
         for time in times:

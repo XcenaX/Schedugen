@@ -14,12 +14,10 @@ class Workload:
 
 class Class:
 
-    def __init__(self, groups, teacher, subject, duration, classrooms, max_lessons, points):
+    def __init__(self, groups, teacher, subject, classrooms, max_lessons, points):
         self.groups = groups
         self.teacher = teacher
-        self.subject = subject
-        
-        self.duration = duration
+        self.subject = subject                
         self.classrooms = classrooms
         self.max_lessons = max_lessons
         self.points = points
@@ -34,8 +32,8 @@ class Class:
         }
 
     def __str__(self):
-        return "Groups {} | Teacher '{}' | Subject '{}' | {} hours | Classrooms {} \n"\
-            .format(self.groups, self.teacher, self.subject, self.duration, self.classrooms)
+        return "Groups {} | Teacher '{}' | Subject '{}' | Classrooms {} \n"\
+            .format(self.groups, self.teacher, self.subject, self.classrooms)
 
     def __repr__(self):
         return str(self)

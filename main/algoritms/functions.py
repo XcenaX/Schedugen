@@ -1,4 +1,6 @@
+from django.http import Http404
 from ..models import *
+from django.shortcuts import get_object_or_404
 
 def add_schedule_to_db(schedule):
     """
@@ -24,4 +26,10 @@ def add_schedule_to_db(schedule):
                                             classroom=classroom)
                 schedule_class.save()
                 lesson_index += 1
-    
+
+
+def get_or_none(model_or_qs, **kwargs):
+    try:
+        return get_object_or_404(model_or_qs, **kwargs)
+    except Http404:
+        return None

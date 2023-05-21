@@ -15,8 +15,7 @@ def initial_population(data, matrix, free, filled, groups_empty_space, teachers_
     """
     classes = data.classes
 
-    for index, classs in classes.items():
-        print("classs.classrooms: ", classs.classrooms)
+    for index, classs in classes.items():        
         ind = 0
         # ind = random.randrange(len(free) - int(classs.duration))
         while True:
@@ -48,14 +47,14 @@ def initial_population(data, matrix, free, filled, groups_empty_space, teachers_
                     # добавляем порядок предметов для групп
                     # insert_order(subjects_order, classs.subject, group_index, classs.type, start_time)                    
                     # добавялем время занятий для группы
-                    for i in range(int(classs.duration)):
-                        groups_empty_space[group_index].append(i + start_time)
+                    # for i in range(int(classs.duration)):
+                    groups_empty_space[group_index].append(start_time)
 
-                for i in range(int(classs.duration)):
-                    filled.setdefault(index, []).append((i + start_time, start_field[1]))         
-                    free.remove((i + start_time, start_field[1]))                                
-                    # добавялем время занятий для учителей
-                    teachers_empty_space[classs.teacher].append(i + start_time)
+                # for i in range(int(classs.duration)):
+                filled.setdefault(index, []).append((start_time, start_field[1]))         
+                free.remove((start_time, start_field[1]))                                
+                # добавялем время занятий для учителей
+                teachers_empty_space[classs.teacher].append(start_time)
                 break
 
     # заполняем матрицу
@@ -138,7 +137,7 @@ def mutate_ideal_spot(matrix, data, ind_class, free, filled, groups_empty_space,
         
         # проверяем не начнутся ли занятия в один день а закончатся на следующий день
         start_time = start_field[0]
-        end_time = start_time + int(classs.duration) - 1
+        end_time = start_time # + int(classs.duration) - 1
         if start_time % WORK_HOURS > end_time % WORK_HOURS:
             ind += 1
             continue
@@ -150,12 +149,12 @@ def mutate_ideal_spot(matrix, data, ind_class, free, filled, groups_empty_space,
 
         # проверяем можно ли использовать весь блок для нового класса и возможных совпадений с учителями и группами
         found = True
-        for i in range(int(classs.duration)):
-            field = (i + start_time, start_field[1])
-            if field not in free or not valid_teacher_group_row(matrix, data, ind_class, field[0]):
-                found = False
-                ind += 1
-                break
+        # for i in range(int(classs.duration)):
+        field = (start_time, start_field[1])
+        if field not in free or not valid_teacher_group_row(matrix, data, ind_class, field[0]):
+            found = False
+            ind += 1
+            break
 
         if found:            
             # удаляем текущий класс из заполненного dict и добавьте его в свободный dict
@@ -172,16 +171,16 @@ def mutate_ideal_spot(matrix, data, ind_class, free, filled, groups_empty_space,
             # update order of the subjects and add empty space for each group
             for group_index in classs.groups:
                 # insert_order(subjects_order, classs.subject, group_index, classs.type, start_time)
-                for i in range(int(classs.duration)):
-                    groups_empty_space[group_index].append(i + start_time)
+                # for i in range(int(classs.duration)):
+                groups_empty_space[group_index].append(start_time)
 
             # add new term of the class to filled, remove those fields from free dict and insert new block in matrix
-            for i in range(int(classs.duration)):
-                filled.setdefault(ind_class, []).append((i + start_time, start_field[1]))
-                free.remove((i + start_time, start_field[1]))
-                matrix[i + start_time][start_field[1]] = ind_class
-                # add new empty space for teacher
-                teachers_empty_space[classs.teacher].append(i+start_time)
+            # for i in range(int(classs.duration)):
+            filled.setdefault(ind_class, []).append((start_time, start_field[1]))
+            free.remove((start_time, start_field[1]))
+            matrix[start_time][start_field[1]] = ind_class
+            # add new empty space for teacher
+            teachers_empty_space[classs.teacher].append(i+start_time)
             break
 
 

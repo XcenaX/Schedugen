@@ -23,7 +23,7 @@ def initial_population(data, matrix, free, filled, groups_empty_space, teachers_
 
             # проверяем не начинаются ли занятия в один день а закончиваются на следующий день
             start_time = start_field[0]
-            end_time = start_time + int(classs.duration) - 1
+            end_time = start_time #+ int(classs.duration) - 1
             if start_time % WORK_HOURS > end_time % WORK_HOURS:
                 ind += 1
                 continue

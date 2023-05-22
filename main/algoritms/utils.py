@@ -146,7 +146,7 @@ def load_data2(teachers_empty_space, groups_empty_space):
                 classrooms_ids = []
                 for clroom in cl.classrooms.all():
                     classrooms_ids.append(clroom.id)
-                new = Class2(group.name, new_teacher, cl.subject.name, classrooms_ids, cl.max_lessons, cl.points)
+                new = Class2([group.name], new_teacher, cl.subject.name, classrooms_ids, cl.max_lessons, cl.points)
                 class_list.append(new)
 
     # shuffle mostly because of teachers

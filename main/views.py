@@ -26,7 +26,6 @@ from .algoritms.functions import add_schedule_to_db, get_object_or_404
 #
 from .algoritms.scheduler import make_schedule
 
-
 class RegisterView(View):
     form_class = MyUserCreationForm
     template_name = 'registration/register.html'
@@ -102,6 +101,9 @@ class SanPinInitialDataView(APIView):
             for group in Group.objects.all():
                 if group.name.startswith(class_number) and class_number.__len__() + 1 == group.name.__len__():
                     groups.append(group)
+                        
+            if not groups:
+                continue
 
             for subject, workload in workloads.items():
                 subject_obj = Subject.objects.filter(name__iexact=subject.lower()).first()
@@ -130,6 +132,10 @@ class SanPinInitialDataView(APIView):
             for group in Group.objects.all():
                 if group.name.startswith(class_number) and class_number.__len__() + 1 == group.name.__len__():
                     groups.append(group)
+            print(groups)
+
+            if not groups:
+                continue
 
             for subject, workload in workloads.items():
                 subject_obj = Subject.objects.filter(name__iexact=subject.lower()).first()
@@ -164,7 +170,7 @@ class RandomlySetupTeachers(APIView):
         for subject in subjects:
             classes = Class.objects.filter(subject=subject)
             for _class in classes:
-                _class.teacher = teachers[0]
+                _class.teacher = teachers[index % len(teachers)]
                 _class.save()
             index += 1
 

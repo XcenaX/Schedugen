@@ -180,7 +180,7 @@ def mutate_ideal_spot(matrix, data, ind_class, free, filled, groups_empty_space,
             free.remove((start_time, start_field[1]))
             matrix[start_time][start_field[1]] = ind_class
             # add new empty space for teacher
-            teachers_empty_space[classs.teacher].append(i+start_time)
+            teachers_empty_space[classs.teacher].append(start_time)
             break
 
 

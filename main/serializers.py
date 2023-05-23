@@ -43,20 +43,24 @@ class ClassSerializer(serializers.ModelSerializer):
     subject = serializers.PrimaryKeyRelatedField(queryset=Subject.objects.all(), required=False)
     max_lessons = serializers.IntegerField(required=False)
 
-    class Meta:
-        model = Class
-        fields = '__all__'
-    
     def update(self, instance, validated_data):
         groups_data = validated_data.pop('groups', [])
         classrooms_data = validated_data.pop('classrooms', [])
         instance = super().update(instance, validated_data)
 
         # Обновляем связи с группами по идентификаторам
-        instance.groups.set([group_data for group_data in groups_data])
-        instance.classrooms.set([classroom_data for classroom_data in classrooms_data])
+        if groups_data:
+            instance.groups.set([group_data for group_data in groups_data])
+        if classrooms_data:
+            instance.classrooms.set([classroom_data for classroom_data in classrooms_data])
 
         return instance
+
+    class Meta:
+        model = Class
+        fields = '__all__'
+    
+    
 
 
 class ScheduleClassSerializer(serializers.ModelSerializer):

@@ -38,6 +38,10 @@ class TeacherSerializer(serializers.ModelSerializer):
 class ClassSerializer(serializers.ModelSerializer):
     groups = GroupPrimaryKeySerializer(many=True, required=False)
     classrooms = ClassroomPrimaryKeySerializer(many=True, required=False)
+    points = serializers.IntegerField(required=False)
+    teacher = serializers.PrimaryKeyRelatedField(queryset=Teacher.objects.all(), required=False)
+    subject = serializers.PrimaryKeyRelatedField(queryset=Subject.objects.all(), required=False)
+    max_lessons = serializers.IntegerField(required=False)
 
     class Meta:
         model = Class

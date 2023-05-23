@@ -48,8 +48,15 @@ class ClassSerializer(serializers.ModelSerializer):
         fields = '__all__'
     
     def update(self, instance, validated_data):
-        super(Class, self).update(instance, validated_data)
-        return self.Meta.model.objects.get(id=instance.id)
+        groups_data = validated_data.pop('groups', [])
+        classrooms_data = validated_data.pop('classrooms', [])
+        instance = super().update(instance, validated_data)
+
+        # Обновляем связи с группами по идентификаторам
+        instance.groups.set([group_data for group_data in groups_data])
+        instance.classrooms.set([classroom_data for classroom_data in classrooms_data])
+
+        return instance
 
 
 class ScheduleClassSerializer(serializers.ModelSerializer):

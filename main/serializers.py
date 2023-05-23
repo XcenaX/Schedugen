@@ -36,8 +36,8 @@ class TeacherSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ClassSerializer(serializers.ModelSerializer):
-    groups = GroupPrimaryKeySerializer(many=True)
-    classrooms = ClassroomPrimaryKeySerializer(many=True)
+    groups = GroupPrimaryKeySerializer(many=True, required=False)
+    classrooms = ClassroomPrimaryKeySerializer(many=True, required=False)
 
     class Meta:
         model = Class

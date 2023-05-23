@@ -1,10 +1,11 @@
 import random
 from operator import itemgetter
-from .utils import load_data, load_data2, show_timetable, set_up, show_statistics, write_solution_to_file, show_timetable_for_groups, get_schedule_for_groups
-from .costs import check_hard_constraints, hard_constraints_cost, empty_space_groups_cost, empty_space_teachers_cost, \
-    free_hour, WORK_HOURS, WORK_DAYS
+from main.algoritms.utils import load_data, load_data2, show_timetable, set_up, show_statistics, write_solution_to_file, show_timetable_for_groups
+from main.algoritms.costs import check_hard_constraints, hard_constraints_cost, empty_space_groups_cost, empty_space_teachers_cost, get_schedule_for_groups, \
+    free_hour, WORK_HOURS, WORK_DAYS, PERVYA_SMENA, VTORAYA_SMENA
 import copy
 import math
+from main.models import Class, Group
 
 
 def initial_population(data, matrix, free, filled, groups_empty_space, teachers_empty_space):
@@ -192,7 +193,7 @@ def evolutionary_algorithm(matrix, data, free, filled, groups_empty_space, teach
     n = 3
     sigma = 2
     run_times = 5
-    max_stagnation = 200
+    max_stagnation = 400
 
     for run in range(run_times):
         print('Run {} | sigma = {}'.format(run + 1, sigma))
@@ -252,9 +253,9 @@ def simulated_hardening(matrix, data, free, filled, groups_empty_space, teachers
     soft constraints as much as possible (empty space for groups and existence of an hour in which there is no classes).
     """
     # number of iterations
-    iter_count = 2500
+    iter_count = 3500
     # temperature
-    t = 0.5
+    t = 0.4
     _, _, curr_cost_group = empty_space_groups_cost(groups_empty_space)
     _, _, curr_cost_teachers = empty_space_teachers_cost(teachers_empty_space)
     curr_cost = curr_cost_group  # + curr_cost_teachers
@@ -304,15 +305,16 @@ def simulated_hardening(matrix, data, free, filled, groups_empty_space, teachers
     # write_solution_to_file(matrix, data, filled, file, groups_empty_space, teachers_empty_space)
 
 
-def make_schedule(data):
+def make_schedule(data_classes):
     """
     main method but with current db
     """
     filled = {}
-    groups_empty_space = {}
+    groups_empty_space = {}    
     teachers_empty_space = {}
     
-    data, groups_empty_space, teachers_empty_space = load_data2(teachers_empty_space, groups_empty_space)
+
+    data, groups_empty_space, teachers_empty_space = load_data2(teachers_empty_space, groups_empty_space, data_classes)    
 
     print("groups_empty_space: ", groups_empty_space)
         
@@ -332,4 +334,4 @@ def make_schedule(data):
 
     groups_matrix = get_schedule_for_groups(data, matrix)
     # show_timetable_for_groups(data, groups_matrix)
-    return groups_matrix    
+    return groups_matrix, matrix    

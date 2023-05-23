@@ -24,7 +24,7 @@ from rest_framework import viewsets
 
 from .algoritms.functions import add_schedule_to_db, get_object_or_404
 #
-from .algoritms.scheduler import make_schedule
+from .algoritms.scheduler import make_schedule, PERVYA_SMENA, VTORAYA_SMENA
 
 class RegisterView(View):
     form_class = MyUserCreationForm
@@ -105,16 +105,18 @@ class SanPinInitialDataView(APIView):
             if not groups:
                 continue
 
-            for subject, workload in workloads.items():
+            for subject, subject_data in workloads.items():
                 subject_obj = Subject.objects.filter(name__iexact=subject.lower()).first()
                 if not get_object_or_404(Subject, name__iexact=subject.lower()):
                     subject_obj = Subject.objects.create(name=subject)
                     subject_obj.save()
                 
+                print(subject_data)
                 
                 new_class = Class.objects.create(
                                     subject=subject_obj,
-                                    points=workload)
+                                    points=subject_data["workload"],
+                                    max_lessons=subject_data["max_lessons"])
                 for group in groups:
                     new_class.groups.add(group)
                 for classroom in Classroom.objects.all():
@@ -137,7 +139,7 @@ class SanPinInitialDataView(APIView):
             if not groups:
                 continue
 
-            for subject, workload in workloads.items():
+            for subject, subject_data in workloads.items():
                 subject_obj = Subject.objects.filter(name__iexact=subject.lower()).first()
                 if not Subject.objects.filter(name__iexact=subject.lower()):
                     subject_obj = Subject.objects.create(name=subject)
@@ -146,7 +148,8 @@ class SanPinInitialDataView(APIView):
                 
                 new_class = Class.objects.create(
                                     subject=subject_obj,
-                                    points=workload)
+                                    points=subject_data["workload"],
+                                    max_lessons=subject_data["max_lessons"])
                 for group in groups:
                     new_class.groups.add(group)
                 for classroom in Classroom.objects.all():
@@ -180,22 +183,56 @@ class RandomlySetupTeachers(APIView):
 
 class ScheduleGenerationView(APIView):
     def post(self, request):
-        # код составления расписания
-        data = Class.objects.all()
-        schedule = make_schedule(data)
+        # Берем все группы первой и второй смены
+        first_smena_groups = []
+        second_smena_groups = []
+        for group in Group.objects.all():
+            for f_group_index in PERVYA_SMENA:
+                if group.name.startswith(f_group_index) and f_group_index.__len__() + 1 == group.name.__len__():
+                    first_smena_groups.append(group)
+            for s_group_index in VTORAYA_SMENA:
+                if group.name.startswith(s_group_index) and s_group_index.__len__() + 1 == group.name.__len__():
+                    second_smena_groups.append(group)
+        
+        # Получаем все уроки для первой и второй смены
+        first_smena = Class.objects.filter(groups__in=first_smena_groups).distinct()    
+        second_smena = Class.objects.filter(groups__in=first_smena_groups).distinct()
+
+        schedule_first = make_schedule(first_smena)
+        schedule_second = make_schedule(second_smena)
 
         ScheduleClass.objects.all().delete()
-        add_schedule_to_db(schedule)
+        add_schedule_to_db(schedule_first)
+        add_schedule_to_db(schedule_second)
 
-        return Response({"message": "Расписание успешно составлено и добавлено в бд", "data": schedule}, status=status.HTTP_200_OK)
+        return Response({"message": "Расписание успешно составлено и добавлено в бд", "smena1": schedule_first, "smena2": schedule_second}, status=status.HTTP_200_OK)
         # Если произошла ошибка при составлении расписания
         # return Response({"message": "Произошла ошибка при составлении расписания"}, status=status.HTTP_400_BAD_REQUEST)
+    
     def get(self, request):
-        # код составления расписания
-        data = Class.objects.all()
-        schedule = make_schedule(data)
+        # Берем все группы первой и второй смены
+        first_smena_groups = []
+        second_smena_groups = []
+        for group in Group.objects.all():
+            for f_group_index in PERVYA_SMENA:
+                if group.name.startswith(f_group_index) and f_group_index.__len__() + 1 == group.name.__len__():
+                    first_smena_groups.append(group)
+            for s_group_index in VTORAYA_SMENA:
+                if group.name.startswith(s_group_index) and s_group_index.__len__() + 1 == group.name.__len__():
+                    second_smena_groups.append(group)
+    
+        first_group_ids = [group.id for group in first_smena_groups]
+        second_group_ids = [group.id for group in second_smena_groups]
+        
+        # Получаем все уроки для первой и второй смены
+        first_smena = Class.objects.filter(groups__id__in=first_group_ids).distinct()    
+        second_smena = Class.objects.filter(groups__id__in=second_group_ids).distinct()
+
+        schedule_first, matrix = make_schedule(first_smena)
+        #schedule_second, matrix = make_schedule(second_smena)
 
         ScheduleClass.objects.all().delete()
-        add_schedule_to_db(schedule)
+        add_schedule_to_db(schedule_first)
+        #add_schedule_to_db(schedule_second, True)
 
-        return Response({"message": "Расписание успешно составлено и добавлено в бд", "data": schedule}, status=status.HTTP_200_OK)
+        return Response({"message": "Расписание успешно составлено и добавлено в бд", "matrix": {'data': matrix, "i": len(matrix), 'j': len(matrix[0])}, "smena1": schedule_first, "smena2": "schedule_second"}, status=status.HTTP_200_OK)

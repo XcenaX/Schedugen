@@ -5,6 +5,11 @@ from .modules.hashutils import make_pw_hash
 from django.http import Http404, JsonResponse
 import json
 
+class GroupPrimaryKeySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ['id']
+
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
@@ -26,7 +31,7 @@ class TeacherSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ClassSerializer(serializers.ModelSerializer):
-    groups = GroupSerializer(many=True)
+    groups = GroupPrimaryKeySerializer(many=True)
     classrooms = ClassroomSerializer(many=True)
 
     class Meta:

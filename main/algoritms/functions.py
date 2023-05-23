@@ -1,14 +1,17 @@
 from django.http import Http404
 from ..models import *
 from django.shortcuts import get_object_or_404
+from main.algoritms.costs import WORK_HOURS
 
-def add_schedule_to_db(schedule):
+def add_schedule_to_db(schedule, second_smena=False):
     """
         Функция добавляет сгенерированное расписание в базу данных
     """
     for group_name, group_schedule in schedule.items():        
         for week_index, _classes in schedule[group_name].items():
             lesson_index = 0
+            if second_smena:
+                lesson_index = WORK_HOURS
             for _class in _classes:
                 if not _class:
                     lesson_index += 1

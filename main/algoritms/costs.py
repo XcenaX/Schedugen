@@ -1,5 +1,46 @@
+from ..models import Group
+
 WORK_DAYS = 5 # Кол-во рабочих дней
-WORK_HOURS = 12 # Макс Кол-во уроков в день
+WORK_HOURS = 7 # Макс Кол-во уроков в день
+
+PERVYA_SMENA = ["1", "5", "9", "10", "11"]
+VTORAYA_SMENA = ["2", "3", "4", "6", "7", "8"]
+
+# Эти предметы должны быть в конце рабочего дня
+PHYSICAL_CLASSES = ["физическая культура", "труд"]
+
+def get_group_by_index(groups, index):
+    for key, value in groups.items():
+        if index == value:
+            return key
+
+def get_schedule_for_group(data, matrix, group: str):
+    group_schedule = {}
+    for i in range(len(matrix)):                       
+        if not group_schedule.get(i // WORK_HOURS):
+            group_schedule[i // WORK_HOURS] = []
+
+        founded = False
+
+        for j in range(len(matrix[i])):
+            if matrix[i][j] is not None:
+                if get_group_by_index(data.groups, data.classes[matrix[i][j]].groups[0]) == group:
+                    class_info = data.classes[matrix[i][j]].__to_dict__()
+                    class_info["classroom"] = data.classrooms[j].name
+                    class_info["group"] = group
+                    group_schedule[i // WORK_HOURS].append(class_info)
+                    founded = True
+        if not founded:
+            group_schedule[i // WORK_HOURS].append(None)
+    return group_schedule
+
+
+def get_schedule_for_groups(data, matrix):
+    schedule = {}
+    for group_name, group_index in data.groups.items():
+        schedule[group_name] = get_schedule_for_group(data, matrix, group_name)
+    return schedule
+
 
 def subjects_order_cost(subjects_order):
     """
@@ -175,18 +216,23 @@ def hard_constraints_cost(matrix, data):
     return total_cost, cost_class, cost_teacher, cost_classrooms, cost_group
 
 
-def get_difficulty_of_day(data, day, _class):
-    start = day * WORK_HOURS
-    end = start + WORK_HOURS
+def get_difficulty_of_day(data, groups_matrix, day, _class):
+    # start = day * WORK_HOURS
+    # end = start + WORK_HOURS
     difficult = 0
-    for i in range(start, end):
-        index = data.matrix[i][_class]
-        if index:
-            difficult += data.classes[index].workload.points
+    # for i in range(start, end):
+    #     index = groups_matrix[_class.name][str(day)]
+    #     if index:
+    #         difficult += data.classes[index].workload.points
+
+    for current_class in groups_matrix[_class.name][day]:
+        if not current_class:
+            continue
+        difficult += current_class["points"]
     return difficult
 
-def is_next_day_harder(data, current_day, _class):
-    return get_difficulty_of_day(data, current_day+1, _class) > get_difficulty_of_day(data, current_day, _class)
+def is_next_day_harder(data, groups_matrix, current_day, _class):
+    return get_difficulty_of_day(data, groups_matrix, current_day+1, _class) > get_difficulty_of_day(data, groups_matrix, current_day, _class)
 
 
 def convert_old_matrix_to_new(matrix, data):
@@ -210,6 +256,7 @@ def check_hard_constraints(matrix, data):
     groups.
     """
     most_difficult_day = 2 # Среда (счет с нуля)
+    groups_matrix = get_schedule_for_groups(data, matrix)
     overlaps = 0
     for i in range(len(matrix)):
         for j in range(len(matrix[i])):
@@ -240,10 +287,18 @@ def check_hard_constraints(matrix, data):
                                     overlaps += 1
 
 
+    # Тут мы проверяем правильно ли соблюдается предметная нагрузка
+    # тоесть понедельник должен быть легче вторника, вторник легче среды, среда тяжелее чт, чт тяжелее пт
+    for i in range(WORK_DAYS-1):
+        for group in Group.objects.all():
+            if not group in groups_matrix.keys():
+                continue
+            is_harder = is_next_day_harder(data, groups_matrix, i, group)
+            if i < most_difficult_day and not is_harder:                
+                overlaps += 1
+            elif i > most_difficult_day and is_harder:
+                overlaps += 1
 
-    # for i in range(WORK_DAYS-1):
     
-
-
 
     return overlaps

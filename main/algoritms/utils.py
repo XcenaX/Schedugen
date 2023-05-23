@@ -100,8 +100,8 @@ def load_data(file_path, teachers_empty_space, groups_empty_space, subjects_orde
     return Data(groups, teachers, classes, classrooms)
 
 
-def load_data2(teachers_empty_space, groups_empty_space):
-    data_classes = Class.objects.all()
+def load_data2(teachers_empty_space, groups_empty_space, data_classes):
+    # data_classes = Class.objects.all()
     data_classrooms = Classroom.objects.all()
 
     # classes: dictionary where key = index of a class, value = class
@@ -146,7 +146,7 @@ def load_data2(teachers_empty_space, groups_empty_space):
                 classrooms_ids = []
                 for clroom in cl.classrooms.all():
                     classrooms_ids.append(clroom.id)
-                new = Class2([group.name], new_teacher, cl.subject.name, classrooms_ids, cl.max_lessons, cl.points)
+                new = Class2(group.name, new_teacher, cl.subject.name, classrooms_ids, cl.max_lessons, cl.points)
                 class_list.append(new)
 
     # shuffle mostly because of teachers
@@ -227,37 +227,7 @@ def show_timetable(matrix):
             d_cnt += 1
             print()
 
-def get_group_by_index(groups, index):
-    for key, value in groups.items():
-        if index == value:
-            return key
 
-def get_schedule_for_group(data, matrix, group: str):
-    group_schedule = {}
-    for i in range(len(matrix)):                       
-        if not group_schedule.get(i // WORK_HOURS):
-            group_schedule[i // WORK_HOURS] = []
-
-        founded = False
-
-        for j in range(len(matrix[i])):
-            if matrix[i][j] is not None:
-                if get_group_by_index(data.groups, data.classes[matrix[i][j]].groups[0]) == group:
-                    class_info = data.classes[matrix[i][j]].__to_dict__()
-                    class_info["classroom"] = data.classrooms[j].name
-                    class_info["group"] = group
-                    group_schedule[i // WORK_HOURS].append(class_info)
-                    founded = True
-        if not founded:
-            group_schedule[i // WORK_HOURS].append(None)
-    return group_schedule
-
-
-def get_schedule_for_groups(data, matrix):
-    schedule = {}
-    for group_name, group_index in data.groups.items():
-        schedule[group_name] = get_schedule_for_group(data, matrix, group_name)
-    return schedule
 
 
 def show_timetable_for_groups(data, groups_matrix: dict):

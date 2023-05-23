@@ -44,18 +44,33 @@ class ClassSerializer(serializers.ModelSerializer):
     subject = serializers.PrimaryKeyRelatedField(queryset=Subject.objects.all(), required=False)
     max_lessons = serializers.IntegerField(required=False)
 
-    # def update(self, instance, validated_data):
-    #     groups_data = validated_data.pop('groups', [])
-    #     classrooms_data = validated_data.pop('classrooms', [])
-    #     instance = super().update(instance, validated_data)
+    def update(self, instance, validated_data):
+        groups_data = validated_data.pop('groups', [])
+        classrooms_data = validated_data.pop('classrooms', [])
+        instance = super(ClassSerializer, self).update(instance, validated_data)
 
-    #     # Обновляем связи с группами по идентификаторам
-    #     if groups_data:
-    #         instance.groups.set([group_data for group_data in groups_data])
-    #     if classrooms_data:
-    #         instance.classrooms.set([classroom_data for classroom_data in classrooms_data])
+        for group_data in groups_data:
+            group_qs = Group.objects.filter(name__iexact=group_data['name'])
 
-    #     return instance
+            if group_qs.exists():
+                group = group_qs.first()
+            else:
+                group = Group.objects.create(**group_data)
+
+            instance.groups.add(group)
+
+
+        for classroom_data in classrooms_data:
+            classroom_qs = Classroom.objects.filter(name__iexact=classroom_data['name'])
+
+            if classroom_qs.exists():
+                classroom = classroom_qs.first()
+            else:
+                classroom = Classroom.objects.create(**classroom_data)
+
+            instance.classrooms.add(classroom)
+
+        return instance
 
     class Meta:
         model = Class

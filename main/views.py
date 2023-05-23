@@ -85,6 +85,13 @@ class ClassViewSet(viewsets.ModelViewSet):
     queryset = Class.objects.all()
     serializer_class = ClassSerializer
 
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
 class ScheduleClassViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = ScheduleClass.objects.all()

@@ -36,25 +36,26 @@ class TeacherSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ClassSerializer(serializers.ModelSerializer):
-    groups = GroupPrimaryKeySerializer(many=True, required=False)
+    #groups = GroupPrimaryKeySerializer(many=True, required=False)
+    groups = serializers.PrimaryKeyRelatedField(queryset=Group.objects.all(), many=True)
     classrooms = ClassroomPrimaryKeySerializer(many=True, required=False)
     points = serializers.IntegerField(required=False)
     teacher = serializers.PrimaryKeyRelatedField(queryset=Teacher.objects.all(), required=False)
     subject = serializers.PrimaryKeyRelatedField(queryset=Subject.objects.all(), required=False)
     max_lessons = serializers.IntegerField(required=False)
 
-    def update(self, instance, validated_data):
-        groups_data = validated_data.pop('groups', [])
-        classrooms_data = validated_data.pop('classrooms', [])
-        instance = super().update(instance, validated_data)
+    # def update(self, instance, validated_data):
+    #     groups_data = validated_data.pop('groups', [])
+    #     classrooms_data = validated_data.pop('classrooms', [])
+    #     instance = super().update(instance, validated_data)
 
-        # Обновляем связи с группами по идентификаторам
-        if groups_data:
-            instance.groups.set([group_data for group_data in groups_data])
-        if classrooms_data:
-            instance.classrooms.set([classroom_data for classroom_data in classrooms_data])
+    #     # Обновляем связи с группами по идентификаторам
+    #     if groups_data:
+    #         instance.groups.set([group_data for group_data in groups_data])
+    #     if classrooms_data:
+    #         instance.classrooms.set([classroom_data for classroom_data in classrooms_data])
 
-        return instance
+    #     return instance
 
     class Meta:
         model = Class

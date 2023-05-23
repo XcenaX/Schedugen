@@ -50,7 +50,7 @@ class ClassSerializer(serializers.ModelSerializer):
         instance = super(ClassSerializer, self).update(instance, validated_data)
 
         for group_data in groups_data:
-            group_qs = Group.objects.filter(name__iexact=group_data['name'])
+            group_qs = Group.objects.filter(name__iexact=group_data.name)
 
             if group_qs.exists():
                 group = group_qs.first()
@@ -61,7 +61,7 @@ class ClassSerializer(serializers.ModelSerializer):
 
 
         for classroom_data in classrooms_data:
-            classroom_qs = Classroom.objects.filter(name__iexact=classroom_data['name'])
+            classroom_qs = Classroom.objects.filter(name__iexact=classroom_data.name)
 
             if classroom_qs.exists():
                 classroom = classroom_qs.first()

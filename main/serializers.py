@@ -37,8 +37,8 @@ class TeacherSerializer(serializers.ModelSerializer):
 
 class ClassSerializer(serializers.ModelSerializer):
     #groups = GroupPrimaryKeySerializer(many=True, required=False)
-    groups = serializers.PrimaryKeyRelatedField(queryset=Group.objects.all(), many=True)
-    classrooms = ClassroomPrimaryKeySerializer(many=True, required=False)
+    groups = serializers.PrimaryKeyRelatedField(queryset=Group.objects.all(), many=True, required=False)
+    classrooms = serializers.PrimaryKeyRelatedField(queryset=Group.objects.all(), many=True, required=False)    
     points = serializers.IntegerField(required=False)
     teacher = serializers.PrimaryKeyRelatedField(queryset=Teacher.objects.all(), required=False)
     subject = serializers.PrimaryKeyRelatedField(queryset=Subject.objects.all(), required=False)

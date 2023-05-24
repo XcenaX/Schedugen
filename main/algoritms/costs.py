@@ -186,6 +186,7 @@ def hard_constraints_cost(matrix, data):
     cost_teacher = 0
     cost_group = 0
     cost_day_workload = 0
+    cost_day_overflowed = 0
     groups_matrix = get_schedule_for_groups(data, matrix)
 
     for i in range(len(matrix)):
@@ -222,19 +223,25 @@ def hard_constraints_cost(matrix, data):
             if not group in groups_matrix.keys():
                 continue
             is_harder = is_next_day_harder(data, groups_matrix, i, group)
+            is_overflowed = is_day_overflowed(groups_matrix, i, group)
             if i < most_difficult_day and not is_harder:                
                 cost_day_workload += 1
             elif i > most_difficult_day and is_harder:
                 cost_day_workload += 1
+            if is_overflowed:
+                cost_day_overflowed += 1
+                
 
-    total_cost = cost_teacher + cost_classrooms + cost_group + cost_day_workload
+    total_cost = cost_teacher + cost_classrooms + cost_group + cost_day_workload + cost_day_overflowed
     return total_cost, cost_class, cost_teacher, cost_classrooms, cost_group
 
 
-def get_difficulty_of_day(data, groups_matrix, day, _class):
+
+def get_difficulty_of_day(groups_matrix, day, _class):
     # start = day * WORK_HOURS
     # end = start + WORK_HOURS
     difficult = 0
+    count = 0
     # for i in range(start, end):
     #     index = groups_matrix[_class.name][str(day)]
     #     if index:
@@ -244,11 +251,17 @@ def get_difficulty_of_day(data, groups_matrix, day, _class):
         if not current_class:
             continue
         difficult += current_class["points"]
-    return difficult
+        count += 1
+    return difficult, count
 
-def is_next_day_harder(data, groups_matrix, current_day, _class):
-    return get_difficulty_of_day(data, groups_matrix, current_day+1, _class) > get_difficulty_of_day(data, groups_matrix, current_day, _class)
+def is_next_day_harder(groups_matrix, current_day, _class):
+    difficult1, _ = get_difficulty_of_day(groups_matrix, current_day+1, _class)
+    difficult2, _ = get_difficulty_of_day(groups_matrix, current_day, _class)
+    return difficult1 > difficult2
 
+def is_day_overflowed(groups_matrix, current_day, _class):
+    _, count_of_lessons = get_difficulty_of_day(groups_matrix, current_day, _class)
+    return count_of_lessons > WORK_HOURS
 
 def convert_old_matrix_to_new(matrix, data):
     """
@@ -308,10 +321,13 @@ def check_hard_constraints(matrix, data):
         for group in Group.objects.all():
             if not group in groups_matrix.keys():
                 continue
-            is_harder = is_next_day_harder(data, groups_matrix, i, group)
+            is_harder = is_next_day_harder(groups_matrix, i, group)
+            is_overflowed = is_day_overflowed(groups_matrix, i, group)
             if i < most_difficult_day and not is_harder:                
                 overlaps += 1
             elif i > most_difficult_day and is_harder:
+                overlaps += 1
+            if is_overflowed:
                 overlaps += 1
 
     

@@ -6,6 +6,7 @@ WORK_HOURS = 7 # Макс Кол-во уроков в день
 PERVYA_SMENA = ["1", "5", "9", "10", "11"]
 VTORAYA_SMENA = ["2", "3", "4", "6", "7", "8"]
 
+#TODO
 # Эти предметы должны быть в конце рабочего дня
 PHYSICAL_CLASSES = ["физическая культура", "труд"]
 
@@ -176,6 +177,7 @@ def hard_constraints_cost(matrix, data):
     :return: total cost, cost per class, cost of teachers, cost of classrooms, cost of groups
     """
     # cost_class: dictionary where key = index of a class, value = total cost of that class
+    most_difficult_day = 2
     cost_class = {}
     for c in data.classes:
         cost_class[c] = 0
@@ -183,6 +185,9 @@ def hard_constraints_cost(matrix, data):
     cost_classrooms = 0
     cost_teacher = 0
     cost_group = 0
+    cost_day_workload = 0
+    groups_matrix = get_schedule_for_groups(data, matrix)
+
     for i in range(len(matrix)):
         for j in range(len(matrix[i])):
             field = matrix[i][j]                                        # for every field in matrix
@@ -212,7 +217,17 @@ def hard_constraints_cost(matrix, data):
                                 cost_group += 1
                                 cost_class[field] += 1
 
-    total_cost = cost_teacher + cost_classrooms + cost_group
+    for i in range(WORK_DAYS-1):
+        for group in Group.objects.all():
+            if not group in groups_matrix.keys():
+                continue
+            is_harder = is_next_day_harder(data, groups_matrix, i, group)
+            if i < most_difficult_day and not is_harder:                
+                cost_day_workload += 1
+            elif i > most_difficult_day and is_harder:
+                cost_day_workload += 1
+
+    total_cost = cost_teacher + cost_classrooms + cost_group + cost_day_workload
     return total_cost, cost_class, cost_teacher, cost_classrooms, cost_group
 
 

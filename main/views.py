@@ -237,10 +237,10 @@ class ScheduleGenerationView(APIView):
 
         schedule_first, data = make_schedule(first_smena, first_smena_groups)
         schedule_first_dict = schedule_to_dict(schedule_first, data)
-        #schedule_second = make_schedule(second_smena)
+        schedule_second = make_schedule(second_smena)
 
-        # ScheduleClass.objects.all().delete()
-        # add_schedule_to_db(schedule_first)
-        #add_schedule_to_db(schedule_second, True)
+        ScheduleClass.objects.all().delete()
+        add_schedule_to_db(schedule_first)
+        add_schedule_to_db(schedule_second, True)
 
         return Response({"message": "Расписание успешно составлено и добавлено в бд", "smena1": schedule_first_dict, "smena2": "schedule_second"}, status=status.HTTP_200_OK)

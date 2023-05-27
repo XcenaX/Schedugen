@@ -224,7 +224,7 @@ def evolutionary_algorithm(matrix, data, free, filled, groups_empty_space, teach
     max_stagnation = 400
 
     for run in range(run_times):
-        print('Run {} | sigma = {}'.format(run + 1, sigma))
+        # print('Run {} | sigma = {}'.format(run + 1, sigma))
 
         t = 0
         stagnation = 0
@@ -281,7 +281,7 @@ def simulated_hardening(matrix, data, free, filled, groups_empty_space, teachers
     soft constraints as much as possible (empty space for groups and existence of an hour in which there is no classes).
     """
     # number of iterations
-    iter_count = 10
+    iter_count = 100
     # temperature
     t = 0.5
     _, _, curr_cost_group = empty_space_groups_cost(groups_empty_space)
@@ -324,12 +324,12 @@ def simulated_hardening(matrix, data, free, filled, groups_empty_space, teachers
             teachers_empty_space = copy.deepcopy(old_teachers_empty_space)
             # subjects_order = copy.deepcopy(old_subjects_order)
         if i % 100 == 0:
-            print('Iteration: {:4d} | Average cost: {:0.8f}'.format(i, curr_cost))
+            pass#print('Iteration: {:4d} | Average cost: {:0.8f}'.format(i, curr_cost))
 
     # print('TIMETABLE AFTER HARDENING')
     # show_timetable(matrix)
     # print('STATISTICS AFTER HARDENING')
-    show_statistics(matrix, data, groups_empty_space, teachers_empty_space)
+    # show_statistics(matrix, data, groups_empty_space, teachers_empty_space)
     # write_solution_to_file(matrix, data, filled, file, groups_empty_space, teachers_empty_space)
 
 
@@ -409,5 +409,5 @@ def make_schedule(data_classes, data_groups):
     distribute_cabintes(data, matrix)
     # groups_matrix = get_schedule_for_groups(data, matrix)
     # show_timetable_for_groups(data, groups_matrix)
-    show_timetable2(matrix, data, data_groups)
+    # show_timetable2(matrix, data, data_groups)
     return matrix, data    

@@ -26,7 +26,7 @@ def add_schedule_to_db(data, matrix, second_smena=False):
             group = None
             for group_name, group_id in data.groups.items():
                 if group_id == _class.groups[0]:
-                    group = Group.objects.get(id=group_id)
+                    group = Group.objects.get(name=group_name)
                     break
 
             teacher = Teacher.objects.get(name=_class.teacher)

@@ -804,7 +804,7 @@ class ScheduleClass(models.Model):
     
 
 class TestTable(models.Model):
-    name = models.TextField(default="")
+    is_generating = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.class_name
+        return "Is Generating"

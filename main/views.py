@@ -190,6 +190,9 @@ class RandomlySetupTeachers(APIView):
 
 class ScheduleGenerationView(APIView):
     def post(self, request):
+        _ = TestTable.objects.all().first()
+        _.is_generating = True
+        _.save()
         # Берем все группы первой и второй смены
         first_smena_groups = []
         second_smena_groups = []
@@ -212,12 +215,20 @@ class ScheduleGenerationView(APIView):
         add_schedule_to_db(data, schedule_first)
         add_schedule_to_db(data, schedule_second, True)
 
+        _ = TestTable.objects.all().first()
+        _.is_generating = False
+        _.save()
+
         return Response({"message": "Расписание успешно составлено и добавлено в бд", "smena1": schedule_first, "smena2": schedule_second}, status=status.HTTP_200_OK)
         # Если произошла ошибка при составлении расписания
         # return Response({"message": "Произошла ошибка при составлении расписания"}, status=status.HTTP_400_BAD_REQUEST)
     
     def get(self, request):
         # Берем все группы первой и второй смены
+        _ = TestTable.objects.all().first()
+        _.is_generating = True
+        _.save()
+
         first_smena_groups = []
         second_smena_groups = []
         for group in Group.objects.all():
@@ -235,12 +246,27 @@ class ScheduleGenerationView(APIView):
         first_smena = Class.objects.filter(groups__id__in=first_group_ids).distinct()    
         second_smena = Class.objects.filter(groups__id__in=second_group_ids).distinct()        
 
-        schedule_first, data = make_schedule(first_smena, first_smena_groups)
-        schedule_first_dict = schedule_to_dict(schedule_first, data)
-        schedule_second, data = make_schedule(second_smena, first_smena_groups)
+        try:
+            schedule_first, data = make_schedule(first_smena, first_smena_groups)
+            schedule_first_dict = schedule_to_dict(schedule_first, data)
+            schedule_second, data = make_schedule(second_smena, first_smena_groups)
 
-        ScheduleClass.objects.all().delete()
-        add_schedule_to_db(data, schedule_first)
-        add_schedule_to_db(data, schedule_second, True)
+            ScheduleClass.objects.all().delete()
+            add_schedule_to_db(data, schedule_first)
+            add_schedule_to_db(data, schedule_second, True)
+            
+            _ = TestTable.objects.all().first()
+            _.is_generating = False
+            _.save()
 
-        return Response({"message": "Расписание успешно составлено и добавлено в бд", "smena1": schedule_first_dict, "smena2": "schedule_second"}, status=status.HTTP_200_OK)
+            return Response({"message": "Расписание успешно составлено и добавлено в бд", "smena1": schedule_first_dict, "smena2": "schedule_second"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+class IsGeneratingView(APIView):
+    def get(self, request):
+        if TestTable.objects.all().first() is None:
+            _  = TestTable.objects.create()
+            _.save()
+        return Response({"is_generating": TestTable.objects.all().first().is_generating}, status=status.HTTP_200_OK)        

@@ -19,6 +19,7 @@ urlpatterns = [
     path('generate', views.ScheduleGenerationView.as_view(), name='generate'), 
     path('initial_workload', views.SanPinInitialDataView.as_view(), name='initial_workload'),
     path('random_setup_teachers', views.RandomlySetupTeachers.as_view(), name='random_setup_teachers'),
+    path('is_generating', views.IsGeneratingView.as_view(), name='is_generating'),
     
     
     path('login', views.LoginView.as_view(), name='login'), 

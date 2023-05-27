@@ -19,6 +19,7 @@ class Class:
         self.teacher = teacher
         self.subject = subject                
         self.classrooms = classrooms
+        self.classroom = None # Это кабинет, который будет выбран генератором
         self.max_lessons = max_lessons
         self.points = points
 
@@ -28,7 +29,8 @@ class Class:
             "teacher": self.teacher,
             "subject": self.subject,           
             "max_lessons": self.max_lessons,
-            "points": self.points
+            "points": self.points,
+            "classroom": self.classroom
         }
 
     def __str__(self):

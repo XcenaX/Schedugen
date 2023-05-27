@@ -115,8 +115,11 @@ def load_data2(teachers_empty_space, groups_empty_space, data_classes):
     class_list = [] 
 
     # every class is assigned a list of classrooms he can be in as indexes (later columns of matrix)
-    for name in data_classrooms:
-        classrooms[len(classrooms)] = name
+    for data_classroom in data_classrooms:
+        groups_empty_space[len(classrooms)] = []
+        classrooms[len(classrooms)] = data_classroom.name
+        
+
 
 
     for cl in data_classes:
@@ -135,7 +138,7 @@ def load_data2(teachers_empty_space, groups_empty_space, data_classes):
             if group.name not in groups:
                 groups[group.name] = len(groups)
                 # initialise for empty space of groups
-                groups_empty_space[groups[group.name]] = []
+                # groups_empty_space[groups[group.name]] = []
             
         # add teacher
         if new_teacher not in teachers:
@@ -146,7 +149,7 @@ def load_data2(teachers_empty_space, groups_empty_space, data_classes):
                 classrooms_ids = []
                 for clroom in cl.classrooms.all():
                     classrooms_ids.append(clroom.id)
-                new = Class2(group.name, new_teacher, cl.subject.name, classrooms_ids, cl.max_lessons, cl.points)
+                new = Class2([group.name], new_teacher, cl.subject.name, classrooms_ids, cl.max_lessons, cl.points)
                 class_list.append(new)
 
     # shuffle mostly because of teachers
@@ -161,7 +164,7 @@ def load_data2(teachers_empty_space, groups_empty_space, data_classes):
     for i in classes:
         cl = classes[i]
 
-        classroom = cl.classrooms
+        # classroom = cl.classrooms
         index_classrooms = []
         # add classrooms
         for index, c in classrooms.items():
@@ -228,6 +231,34 @@ def show_timetable(matrix):
             print()
 
 
+def show_timetable2(matrix, data, groups):
+    """
+    Prints timetable matrix. But X cord is Groups
+    """
+    days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+    hours = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+    hours = get_time_of_lessons(WORK_HOURS)
+
+    # print heading for classrooms
+    for i in range(len(matrix[0])):                
+        print('{:6s}'.format(groups[i].name), end='')
+    print()
+
+    d_cnt = 0
+    h_cnt = 0
+    for i in range(len(matrix)):
+        day = days[d_cnt]
+        hour = hours[h_cnt]
+        print('{:10s} {:13s} ->  '.format(day, "{0} - {1}".format(hour[0].strftime("%H:%M"), hour[1].strftime("%H:%M"))), end='')
+        for j in range(len(matrix[i])):
+            if matrix[i][j]:
+                print('{:6s} '.format(data.classes[matrix[i][j]].classroom), end='')
+        print()
+        h_cnt += 1
+        if h_cnt == WORK_HOURS:
+            h_cnt = 0
+            d_cnt += 1
+            print()
 
 
 def show_timetable_for_groups(data, groups_matrix: dict):
@@ -251,6 +282,7 @@ def show_timetable_for_groups(data, groups_matrix: dict):
     d_cnt = 0
     h_cnt = 0
     matrix_len = WORK_DAYS*WORK_HOURS
+    f = open("sample_output.txt", 'w', "utf-16")
     for i in range(matrix_len):
         day = days[d_cnt]
         day_index = days.index(day)
@@ -261,13 +293,20 @@ def show_timetable_for_groups(data, groups_matrix: dict):
             .format(day, "{0} - {1}"
             .format(hour[0].strftime("%H:%M"), hour[1].strftime("%H:%M"))), end='')
         
+        f.write('{:10s} {:13s} ->  '
+            .format(day, "{0} - {1}"
+            .format(hour[0].strftime("%H:%M"), hour[1].strftime("%H:%M"))))
+        
         for group_name, group_index in data.groups.items():
             if groups_matrix[group_name][day_index][hour_index] is not None:                
-                print('{:6s} '.format("{:.{}s}".format(groups_matrix[group_name][day_index][hour_index].subject, 6)), end='')
+                print('{:6s} '.format("{:.{}s}".format(groups_matrix[group_name][day_index][hour_index]["subject"], 6)), end='')
+                f.write('{:6s} '.format("{:.{}s}".format(groups_matrix[group_name][day_index][hour_index]["subject"], 6)))
             else:
                 print('{:6s} '.format("None"), end='')
+                f.write('{:6s} '.format("None"))
         
         print()
+        f.write("\n")
         h_cnt += 1
         if h_cnt == WORK_HOURS:
             h_cnt = 0

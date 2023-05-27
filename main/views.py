@@ -2,10 +2,10 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import View
-from .forms import *
-from .models import *
+from main.forms import *
+from main.models import *
 from django.contrib import messages
-from .modules.hashutils import *
+from main.modules.hashutils import *
 import datetime
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.filters import SearchFilter
@@ -18,13 +18,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 
-from .modules.utils import *
-from .serializers import *
+from main.modules.utils import *
+from main.serializers import *
 from rest_framework import viewsets
 
-from .algoritms.functions import add_schedule_to_db, get_object_or_404
+from main.algoritms.functions import add_schedule_to_db, get_object_or_404
 #
-from .algoritms.scheduler import make_schedule, PERVYA_SMENA, VTORAYA_SMENA
+from main.algoritms.scheduler import make_schedule, PERVYA_SMENA, VTORAYA_SMENA, schedule_to_dict
 
 class RegisterView(View):
     form_class = MyUserCreationForm
@@ -233,13 +233,14 @@ class ScheduleGenerationView(APIView):
         
         # Получаем все уроки для первой и второй смены
         first_smena = Class.objects.filter(groups__id__in=first_group_ids).distinct()    
-        second_smena = Class.objects.filter(groups__id__in=second_group_ids).distinct()
+        second_smena = Class.objects.filter(groups__id__in=second_group_ids).distinct()        
 
-        schedule_first, matrix = make_schedule(first_smena)
-        #schedule_second, matrix = make_schedule(second_smena)
+        schedule_first, data = make_schedule(first_smena, first_smena_groups)
+        schedule_first_dict = schedule_to_dict(schedule_first, data)
+        #schedule_second = make_schedule(second_smena)
 
-        ScheduleClass.objects.all().delete()
-        add_schedule_to_db(schedule_first)
+        # ScheduleClass.objects.all().delete()
+        # add_schedule_to_db(schedule_first)
         #add_schedule_to_db(schedule_second, True)
 
-        return Response({"message": "Расписание успешно составлено и добавлено в бд", "matrix": {'data': matrix, "i": len(matrix), 'j': len(matrix[0])}, "smena1": schedule_first, "smena2": "schedule_second"}, status=status.HTTP_200_OK)
+        return Response({"message": "Расписание успешно составлено и добавлено в бд", "smena1": schedule_first_dict, "smena2": "schedule_second"}, status=status.HTTP_200_OK)

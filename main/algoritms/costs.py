@@ -27,7 +27,7 @@ def get_schedule_for_group(data, matrix, group: str):
             if matrix[i][j] is not None:
                 if get_group_by_index(data.groups, data.classes[matrix[i][j]].groups[0]) == group:
                     class_info = data.classes[matrix[i][j]].__to_dict__()
-                    class_info["classroom"] = data.classrooms[j].name
+                    class_info["classroom"] = data.classrooms[j]
                     class_info["group"] = group
                     group_schedule[i // WORK_HOURS].append(class_info)
                     founded = True
@@ -102,8 +102,8 @@ def empty_space_groups_cost(groups_empty_space):
             b = times[i]
             diff = b - a
             # classes are in the same day if their time div 12 is the same
-            if a // 12 == b // 12 and diff > 1:
-                empty_per_day[a // 12] += diff - 1
+            if a // WORK_HOURS == b // WORK_HOURS and diff > 1:
+                empty_per_day[a // WORK_HOURS] += diff - 1
                 cost += diff - 1
 
         # compare current max with empty spaces per day for current group
@@ -136,8 +136,8 @@ def empty_space_teachers_cost(teachers_empty_space):
             b = times[i]
             diff = b - a
             # classes are in the same day if their time div 12 is the same
-            if a // 12 == b // 12 and diff > 1:
-                empty_per_day[a // 12] += diff - 1
+            if a // WORK_HOURS == b // WORK_HOURS and diff > 1:
+                empty_per_day[a // WORK_HOURS] += diff - 1
                 cost += diff - 1
 
         # compare current max with empty spaces per day for current teacher
@@ -163,7 +163,7 @@ def free_hour(matrix):
                 exists = False
 
         if exists:
-            return '{}: {}'.format(days[i // 12], hours[i % 12])
+            return '{}: {}'.format(days[i // WORK_HOURS], hours[i % WORK_HOURS])
 
     return -1
 

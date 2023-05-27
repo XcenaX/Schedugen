@@ -1,6 +1,6 @@
 import random
 from operator import itemgetter
-from main.algoritms.utils import load_data, load_data2, show_timetable, set_up, show_statistics, write_solution_to_file, show_timetable_for_groups
+from main.algoritms.utils import load_data, load_data2, show_timetable, show_timetable2, set_up, show_statistics, write_solution_to_file, show_timetable_for_groups
 from main.algoritms.costs import check_hard_constraints, hard_constraints_cost, empty_space_groups_cost, empty_space_teachers_cost, get_schedule_for_groups, \
     free_hour, WORK_HOURS, WORK_DAYS, PERVYA_SMENA, VTORAYA_SMENA
 import copy
@@ -19,24 +19,25 @@ def initial_population(data, matrix, free, filled, groups_empty_space, teachers_
     for index, classs in classes.items():        
         ind = 0
         # ind = random.randrange(len(free) - int(classs.duration))
+        # count_of_found = 0
         while True:
             start_field = free[ind]
 
             # проверяем не начинаются ли занятия в один день а закончиваются на следующий день
             start_time = start_field[0]
-            end_time = start_time #+ int(classs.duration) - 1
-            if start_time % WORK_HOURS > end_time % WORK_HOURS:
-                ind += 1
-                continue
+            # end_time = start_time #+ int(classs.duration) - 1
+            # if start_time % WORK_HOURS > end_time % WORK_HOURS:
+            #     ind += 1
+            #     continue
 
             found = True
             # проверяем свободен ли весь блок для класса
-            # for i in range(1, int(classs.duration)):
-            #     field = (i + start_time, start_field[1])
-            #     if field not in free:
-            #         found = False
-            #         ind += 1
-            #         break
+            for i in range(1, 1):#int(classs.duration)):
+                field = (i + start_time, start_field[1])
+                if field not in free:
+                    found = False
+                    ind += 1
+                    break
 
             # подходит ли кабинет 
             if start_field[1] not in classs.classrooms:
@@ -44,7 +45,8 @@ def initial_population(data, matrix, free, filled, groups_empty_space, teachers_
                 continue
 
             if found:
-                for group_index in classs.groups:
+                # count_of_found+=1
+                for group_index in classs.classrooms:
                     # добавляем порядок предметов для групп
                     # insert_order(subjects_order, classs.subject, group_index, classs.type, start_time)                    
                     # добавялем время занятий для группы
@@ -57,6 +59,7 @@ def initial_population(data, matrix, free, filled, groups_empty_space, teachers_
                 # добавялем время занятий для учителей
                 teachers_empty_space[classs.teacher].append(start_time)
                 break
+        # print("count_of_found:", count_of_found)
 
     # заполняем матрицу
     for index, fields_list in filled.items():
@@ -103,16 +106,37 @@ def valid_teacher_group_row(matrix, data, index_class, row):
     Возвращает, может ли находиться класс в этой строке из-за возможного перекрытия учителей или групп.
     """
     c1 = data.classes[index_class]
+    classrooms = c1.classrooms
+    classrooms_set = set()
+
     for j in range(len(matrix[row])):
         if matrix[row][j] is not None:
-            c2 = data.classes[matrix[row][j]]
+            c2 = data.classes[matrix[row][j]]            
             # check teacher
             if c1.teacher == c2.teacher:
                 return False
             # check groups
-            for g in c2.groups:
-                if g in c1.groups:
-                    return False
+            # for g in c2.groups:
+            #     if g in c1.groups:
+            #         return False            
+            for classroom in c2.classrooms:
+                classrooms_set.add(classroom)                    
+
+    # У нас есть set в котором находятся id кабиентов которые нужны для Конкретного дня конкретного урока для конкретных групп
+    # Мы определяем хватит ли всем кабинетов в этот день в это время, если нет то False
+    for j in range(len(matrix[row])):
+        if matrix[row][j] is not None:
+            is_removed = False
+            c2 = data.classes[matrix[row][j]]            
+            for classroom in c2.classrooms:
+                try:
+                    classrooms_set.remove(classroom)
+                    is_removed = True
+                except KeyError:
+                    continue
+            if not is_removed:
+                return False
+
     return True
 
 
@@ -121,7 +145,6 @@ def mutate_ideal_spot(matrix, data, ind_class, free, filled, groups_empty_space,
     Функция, которая пытается найти новые поля в матрице для индекса класса, где стоимость класса равна 0 (учитываются
     только жесткие ограничения). Если найдено оптимальное место, поля в матрице заменяются.
     """
-
     # найдим строки и поля, в которых в данный момент находится класс
     rows = []
     fields = filled[ind_class]
@@ -147,6 +170,8 @@ def mutate_ideal_spot(matrix, data, ind_class, free, filled, groups_empty_space,
         if start_field[1] not in classs.classrooms:
             ind += 1
             continue
+        
+        
 
         # проверяем можно ли использовать весь блок для нового класса и возможных совпадений с учителями и группами
         found = True
@@ -155,7 +180,10 @@ def mutate_ideal_spot(matrix, data, ind_class, free, filled, groups_empty_space,
         if field not in free or not valid_teacher_group_row(matrix, data, ind_class, field[0]):
             found = False
             ind += 1
-            break
+            # break
+            
+
+        
 
         if found:            
             # удаляем текущий класс из заполненного dict и добавьте его в свободный dict
@@ -163,14 +191,14 @@ def mutate_ideal_spot(matrix, data, ind_class, free, filled, groups_empty_space,
             for f in fields:
                 free.append((f[0], f[1]))
                 matrix[f[0]][f[1]] = None
-                # remove empty space of the group from old place of the class
-                for group_index in classs.groups:
+                # remove empty space of the group from old place of the class                
+                for group_index in classs.classrooms:
                     groups_empty_space[group_index].remove(f[0])
                 # remove teacher's empty space from old place of the class
                 teachers_empty_space[classs.teacher].remove(f[0])
 
             # update order of the subjects and add empty space for each group
-            for group_index in classs.groups:
+            for group_index in classs.classrooms:
                 # insert_order(subjects_order, classs.subject, group_index, classs.type, start_time)
                 # for i in range(int(classs.duration)):
                 groups_empty_space[group_index].append(start_time)
@@ -253,9 +281,9 @@ def simulated_hardening(matrix, data, free, filled, groups_empty_space, teachers
     soft constraints as much as possible (empty space for groups and existence of an hour in which there is no classes).
     """
     # number of iterations
-    iter_count = 3500
+    iter_count = 2000
     # temperature
-    t = 0.4
+    t = 0.5
     _, _, curr_cost_group = empty_space_groups_cost(groups_empty_space)
     _, _, curr_cost_teachers = empty_space_teachers_cost(teachers_empty_space)
     curr_cost = curr_cost_group  # + curr_cost_teachers
@@ -305,7 +333,55 @@ def simulated_hardening(matrix, data, free, filled, groups_empty_space, teachers
     # write_solution_to_file(matrix, data, filled, file, groups_empty_space, teachers_empty_space)
 
 
-def make_schedule(data_classes):
+# Распределяет кабинеты по занятиям
+def distribute_cabintes(data, matrix):
+    len_y = len(matrix)
+    len_x = len(matrix[0])
+    for i in range(len_y):
+        classrooms_set = set()
+        for j in range(len_x):
+            if matrix[i][j] is not None:
+                _class = data.classes[matrix[i][j]]                            
+                for classroom in _class.classrooms:
+                    classrooms_set.add(classroom)
+
+        for j in range(len_x):
+            if matrix[i][j] is not None:
+                _class = data.classes[matrix[i][j]]                            
+                for classroom in _class.classrooms:
+                    try:
+                        classrooms_set.remove(classroom)
+                        _class.classroom = data.classrooms[classroom]
+                        break
+                    except KeyError:
+                        continue
+
+def schedule_to_dict(matrix, data):
+    schedule_dict = {}
+    len_y = len(matrix)
+    len_x = len(matrix[0])
+    for i in range(len_y):        
+        for j in range(len_x):
+            if matrix[i][j] is None:
+                continue
+            _class = data.classes[matrix[i][j]]
+            group_name = None
+            for current_group_name, value in data.groups.items():
+                if value == _class.groups[0]:
+                    group_name = current_group_name
+                    break
+            weekday = str(i%WORK_HOURS)
+            
+            if not schedule_dict.keys().__contains__(group_name):
+                schedule_dict[group_name] = {}
+
+            if not schedule_dict[group_name].keys().__contains__(weekday):
+                schedule_dict[group_name][weekday] = []
+                        
+            schedule_dict[group_name][weekday].append(_class.__to_dict__()) 
+    return schedule_dict
+
+def make_schedule(data_classes, data_groups):
     """
     main method but with current db
     """
@@ -314,11 +390,9 @@ def make_schedule(data_classes):
     teachers_empty_space = {}
     
 
-    data, groups_empty_space, teachers_empty_space = load_data2(teachers_empty_space, groups_empty_space, data_classes)    
-
-    print("groups_empty_space: ", groups_empty_space)
-        
-    matrix, free = set_up(len(data.classrooms))
+    data, groups_empty_space, teachers_empty_space = load_data2(teachers_empty_space, groups_empty_space, data_classes)        
+    
+    matrix, free = set_up(len(data.groups))
     initial_population(data, matrix, free, filled, groups_empty_space, teachers_empty_space)
 
     total, _, _, _, _ = hard_constraints_cost(matrix, data)
@@ -332,6 +406,8 @@ def make_schedule(data_classes):
 
     # print("TIMETABLE FOR GROUPS OY DA:\n") # ВОТ ТУТ ВСЕ ВЫВОДИТСЯ
 
-    groups_matrix = get_schedule_for_groups(data, matrix)
+    distribute_cabintes(data, matrix)
+    # groups_matrix = get_schedule_for_groups(data, matrix)
     # show_timetable_for_groups(data, groups_matrix)
-    return groups_matrix, matrix    
+    show_timetable2(matrix, data, data_groups)
+    return matrix, data    

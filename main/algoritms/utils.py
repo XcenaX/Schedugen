@@ -239,8 +239,10 @@ def show_timetable2(matrix, data, groups):
     hours = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
     hours = get_time_of_lessons(WORK_HOURS)
 
+    space = ' '
+    print(23*space)
     # print heading for classrooms
-    for i in range(len(matrix[0])):                
+    for i in range(len(groups)):                
         print('{:6s}'.format(groups[i].name), end='')
     print()
 
@@ -249,10 +251,12 @@ def show_timetable2(matrix, data, groups):
     for i in range(len(matrix)):
         day = days[d_cnt]
         hour = hours[h_cnt]
-        print('{:10s} {:13s} ->  '.format(day, "{0} - {1}".format(hour[0].strftime("%H:%M"), hour[1].strftime("%H:%M"))), end='')
+        print('{:10s} {:13s}- >  '.format(day, "{0} - {1}".format(hour[0].strftime("%H:%M"), hour[1].strftime("%H:%M"))), end='')
         for j in range(len(matrix[i])):
             if matrix[i][j]:
                 print('{:6s} '.format(data.classes[matrix[i][j]].classroom), end='')
+            else:
+                print('{:6s} '.format("Нет"))
         print()
         h_cnt += 1
         if h_cnt == WORK_HOURS:

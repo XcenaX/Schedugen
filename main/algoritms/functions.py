@@ -23,7 +23,12 @@ def add_schedule_to_db(data, matrix, second_smena=False):
                 lesson_index += 1
                 continue
 
-            group = Group.objects.get(id=data.groups[_class.groups[0]].id)
+            group = None
+            for group_name, group_id in data.groups.items():
+                if group_id == _class.groups[0]:
+                    group = Group.objects.get(id=data.groups[_class.groups[0]].id)
+                    break
+                
             teacher = Teacher.objects.get(name=_class.teacher)
             subject = Subject.objects.get(name=_class.subject)
             classroom = _class.classroom

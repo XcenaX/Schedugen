@@ -205,12 +205,12 @@ class ScheduleGenerationView(APIView):
         first_smena = Class.objects.filter(groups__in=first_smena_groups).distinct()    
         second_smena = Class.objects.filter(groups__in=first_smena_groups).distinct()
 
-        schedule_first = make_schedule(first_smena)
-        schedule_second = make_schedule(second_smena)
+        schedule_first, data = make_schedule(first_smena)
+        schedule_second, data = make_schedule(second_smena)
 
         ScheduleClass.objects.all().delete()
-        add_schedule_to_db(schedule_first)
-        add_schedule_to_db(schedule_second)
+        add_schedule_to_db(data, schedule_first)
+        add_schedule_to_db(data, schedule_second, True)
 
         return Response({"message": "Расписание успешно составлено и добавлено в бд", "smena1": schedule_first, "smena2": schedule_second}, status=status.HTTP_200_OK)
         # Если произошла ошибка при составлении расписания
@@ -237,10 +237,10 @@ class ScheduleGenerationView(APIView):
 
         schedule_first, data = make_schedule(first_smena, first_smena_groups)
         schedule_first_dict = schedule_to_dict(schedule_first, data)
-        schedule_second = make_schedule(second_smena)
+        schedule_second, data = make_schedule(second_smena, first_smena_groups)
 
         ScheduleClass.objects.all().delete()
-        add_schedule_to_db(schedule_first)
-        add_schedule_to_db(schedule_second, True)
+        add_schedule_to_db(data, schedule_first)
+        add_schedule_to_db(data, schedule_second, True)
 
         return Response({"message": "Расписание успешно составлено и добавлено в бд", "smena1": schedule_first_dict, "smena2": "schedule_second"}, status=status.HTTP_200_OK)

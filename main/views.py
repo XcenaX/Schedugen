@@ -26,6 +26,8 @@ from main.algoritms.functions import add_schedule_to_db, get_object_or_404
 #
 from main.algoritms.scheduler import make_schedule, PERVYA_SMENA, VTORAYA_SMENA, schedule_to_dict
 
+import asyncio
+
 class RegisterView(View):
     form_class = MyUserCreationForm
     template_name = 'registration/register.html'
@@ -193,42 +195,12 @@ class ScheduleGenerationView(APIView):
         _ = TestTable.objects.all().first()
         _.is_generating = True
         _.save()
-        # Берем все группы первой и второй смены
-        first_smena_groups = []
-        second_smena_groups = []
-        for group in Group.objects.all():
-            for f_group_index in PERVYA_SMENA:
-                if group.name.startswith(f_group_index) and f_group_index.__len__() + 1 == group.name.__len__():
-                    first_smena_groups.append(group)
-            for s_group_index in VTORAYA_SMENA:
-                if group.name.startswith(s_group_index) and s_group_index.__len__() + 1 == group.name.__len__():
-                    second_smena_groups.append(group)
-        
-        # Получаем все уроки для первой и второй смены
-        first_smena = Class.objects.filter(groups__in=first_smena_groups).distinct()    
-        second_smena = Class.objects.filter(groups__in=first_smena_groups).distinct()
 
-        schedule_first, data = make_schedule(first_smena)
-        schedule_second, data = make_schedule(second_smena)
+        asyncio.create_task(self.schedule())
 
-        ScheduleClass.objects.all().delete()
-        add_schedule_to_db(data, schedule_first)
-        add_schedule_to_db(data, schedule_second, True)
-
-        _ = TestTable.objects.all().first()
-        _.is_generating = False
-        _.save()
-
-        return Response({"message": "Расписание успешно составлено и добавлено в бд", "smena1": schedule_first, "smena2": schedule_second}, status=status.HTTP_200_OK)
-        # Если произошла ошибка при составлении расписания
-        # return Response({"message": "Произошла ошибка при составлении расписания"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Расписание началось генерироваться!"}, status=status.HTTP_200_OK)
     
-    def get(self, request):
-        # Берем все группы первой и второй смены
-        _ = TestTable.objects.all().first()
-        _.is_generating = True
-        _.save()
-
+    async def schedule(self):
         first_smena_groups = []
         second_smena_groups = []
         for group in Group.objects.all():
@@ -248,7 +220,7 @@ class ScheduleGenerationView(APIView):
 
         try:
             schedule_first, data = make_schedule(first_smena, first_smena_groups)
-            schedule_first_dict = schedule_to_dict(schedule_first, data)
+            # schedule_first_dict = schedule_to_dict(schedule_first, data)
             schedule_second, data = make_schedule(second_smena, first_smena_groups)
 
             ScheduleClass.objects.all().delete()
@@ -258,10 +230,20 @@ class ScheduleGenerationView(APIView):
             _ = TestTable.objects.all().first()
             _.is_generating = False
             _.save()
-
-            return Response({"message": "Расписание успешно составлено и добавлено в бд", "smena1": schedule_first_dict, "smena2": "schedule_second"}, status=status.HTTP_200_OK)
+            
         except Exception as e:
-            return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            # return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            print(e)
+
+    def get(self, request):        
+        _ = TestTable.objects.all().first()
+        _.is_generating = True
+        _.save()
+
+        asyncio.create_task(self.schedule())
+
+        return Response({"message": "Расписание началось генерироваться!"}, status=status.HTTP_200_OK)
+        
         
 
 class IsGeneratingView(APIView):

@@ -142,13 +142,10 @@ DATABASES = {
 'default': {
     'ENGINE': 'django.db.backends.mysql',
     'NAME': 'cu50559_main',
-    'USER': 'cu50559',
+    'USER': 'cu50559_main',
     'PASSWORD': 'Dagad582#',
     'HOST': '5.23.50.56',
     'PORT': '',
-    'OPTIONS': {
-        'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-    }
 }
 }
 

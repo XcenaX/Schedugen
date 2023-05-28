@@ -128,14 +128,28 @@ WSGI_APPLICATION = 'schedule.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'schedugen$main',
+#         'USER': 'schedugen',
+#         'PASSWORD': 'Dagad582#',
+#         'HOST': 'schedugen.mysql.pythonanywhere-services.com',
+#     }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'schedugen$main',
-        'USER': 'schedugen',
-        'PASSWORD': 'Dagad582#',
-        'HOST': 'schedugen.mysql.pythonanywhere-services.com',
+'default': {
+    'ENGINE': 'django.db.backends.mysql',
+    'NAME': 'cu50559',
+    'USER': 'cu50559',
+    'PASSWORD': 'Dagad582#',
+    'HOST': 'localhost',
+    'PORT': '',
+    'OPTIONS': {
+        'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
     }
+}
 }
 
 # Password validation

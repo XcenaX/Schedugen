@@ -191,12 +191,13 @@ class RandomlySetupTeachers(APIView):
 
 
 class ScheduleGenerationView(APIView):
-    def post(self, request):
+    async def post(self, request):
         _ = TestTable.objects.all().first()
         _.is_generating = True
         _.save()
 
-        asyncio.create_task(self.schedule())
+        # asyncio.create_task(self.schedule())
+        await self.schedule()
 
         return Response({"message": "Расписание началось генерироваться!"}, status=status.HTTP_200_OK)
     
@@ -235,12 +236,13 @@ class ScheduleGenerationView(APIView):
             # return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             print(e)
 
-    def get(self, request):        
+    async def get(self, request):        
         _ = TestTable.objects.all().first()
         _.is_generating = True
         _.save()
 
-        asyncio.create_task(self.schedule())
+        # asyncio.create_task(self.schedule())
+        await self.schedule()
 
         return Response({"message": "Расписание началось генерироваться!"}, status=status.HTTP_200_OK)
         

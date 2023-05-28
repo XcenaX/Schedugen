@@ -141,7 +141,7 @@ WSGI_APPLICATION = 'schedule.wsgi.application'
 DATABASES = {
 'default': {
     'ENGINE': 'django.db.backends.mysql',
-    'NAME': 'cu50559',
+    'NAME': 'cu50559_main',
     'USER': 'cu50559',
     'PASSWORD': 'Dagad582#',
     'HOST': '5.23.50.56',

@@ -20,6 +20,7 @@ urlpatterns = [
     path('initial_workload', views.SanPinInitialDataView.as_view(), name='initial_workload'),
     path('random_setup_teachers', views.RandomlySetupTeachers.as_view(), name='random_setup_teachers'),
     path('is_generating', views.IsGeneratingView.as_view(), name='is_generating'),
+    path('generate_general_data', views.GenerateGeneralData.as_view(), name='generate_general_data'),
     
     
     path('login', views.LoginView.as_view(), name='login'), 

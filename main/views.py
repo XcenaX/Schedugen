@@ -189,6 +189,30 @@ class RandomlySetupTeachers(APIView):
 
         return Response({"message": "Успешно!"}, status=status.HTTP_200_OK)
 
+class GenerateGeneralData(APIView):
+    def get(self, request):
+        # generating some groups
+        letters = ["А", "Б", "В", "Г"]
+        for index in range(1, 12):
+            for letter in letters:
+                group = Group.objects.create(name="{0}{1}".format(index, letter))
+                group.save()
+        
+        # generating some classrooms
+        count_floors = 4
+        classrooms_per_floor = 10
+        for floor in range(1, count_floors+1):
+            for number in range(1, classrooms_per_floor+1):
+                classroom = Classroom.objects.create(name="{0}{1}".format(floor, number))
+                classroom.save()
+
+        #generating some teachers 
+        count_teachers = 20
+        for index in range(1, count_teachers+1):
+            teacher = Teacher.objects.create(name="Учитель {0}".format(index))
+            teacher.save()
+
+        return Response({"message": "Успешно!"}, status=status.HTTP_200_OK)
 
 class ScheduleGenerationView(APIView):
     async def post(self, request):

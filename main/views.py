@@ -260,14 +260,14 @@ class ScheduleGenerationView(APIView):
             # return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             print(e)
 
-    async def get(self, request):        
+    def get(self, request):        
         _ = TestTable.objects.all().first()
         _.is_generating = True
         _.save()
 
         loop = asyncio.get_event_loop()
         task = loop.create_task(self.schedule())
-        await task
+        # await task
         # await self.schedule()
 
         return Response({"message": "Расписание началось генерироваться!"}, status=status.HTTP_200_OK)

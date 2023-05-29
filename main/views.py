@@ -220,10 +220,11 @@ class ScheduleGenerationView(APIView):
         _.is_generating = True
         _.save()
 
-        asyncio.create_task(self.schedule())
+        # asyncio.create_task(self.schedule())
+        self.schedule()
         # await self.schedule()
 
-        return Response({"message": "Расписание началось генерироваться!"}, status=status.HTTP_200_OK)
+        return Response({"message": "Расписание готово!"}, status=status.HTTP_200_OK)
     
     async def schedule(self):
         first_smena_groups = []
@@ -266,11 +267,13 @@ class ScheduleGenerationView(APIView):
         _.save()
 
         loop = asyncio.get_event_loop()
-        task = loop.create_task(self.schedule())
+        #task = loop.create_task(self.schedule())
+        self.schedule()
+        
         # await task
         # await self.schedule()
 
-        return Response({"message": "Расписание началось генерироваться!"}, status=status.HTTP_200_OK)
+        return Response({"message": "Расписание готово!"}, status=status.HTTP_200_OK)
         
         
 

@@ -226,7 +226,7 @@ class ScheduleGenerationView(APIView):
 
         return Response({"message": "Расписание готово!"}, status=status.HTTP_200_OK)
     
-    async def schedule(self):
+    def schedule(self):
         first_smena_groups = []
         second_smena_groups = []
         for group in Group.objects.all():

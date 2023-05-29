@@ -249,7 +249,8 @@ class ScheduleGenerationView(APIView):
             # schedule_first_dict = schedule_to_dict(schedule_first, data)
             schedule_second, data = make_schedule(second_smena, first_smena_groups)
 
-            ScheduleClass.objects.all().delete()
+            for schedule_class in ScheduleClass.objects.all():
+                schedule_class.delete()
             add_schedule_to_db(data, schedule_first)
             add_schedule_to_db(data, schedule_second, True)
             

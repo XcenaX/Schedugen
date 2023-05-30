@@ -226,7 +226,7 @@ class ScheduleGenerationView(APIView):
         # asyncio.create_task(self.schedule())
         # self.schedule()
         t = threading.Thread(target=self.schedule, args=(), kwargs={})
-        t.setDaemon(True)
+        t.daemon = False
         t.start()
         # await self.schedule()
 
@@ -276,7 +276,7 @@ class ScheduleGenerationView(APIView):
         # loop = asyncio.get_event_loop()
         #task = loop.create_task(self.schedule())
         t = threading.Thread(target=self.schedule, args=(), kwargs={})
-        t.setDaemon(True)
+        t.daemon = False
         t.start()
         # self.schedule()
         

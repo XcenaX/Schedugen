@@ -271,7 +271,7 @@ class ScheduleGenerationView(APIView):
         _.is_generating = True
         _.save()
 
-        loop = asyncio.get_event_loop()
+        # loop = asyncio.get_event_loop()
         #task = loop.create_task(self.schedule())
         self.schedule()
         

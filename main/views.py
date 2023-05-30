@@ -1,3 +1,4 @@
+import threading
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -223,10 +224,11 @@ class ScheduleGenerationView(APIView):
         _.save()
 
         # asyncio.create_task(self.schedule())
-        self.schedule()
+        # self.schedule()
+        threading.Thread(target=self.schedule, args=(), kwargs={})
         # await self.schedule()
 
-        return Response({"message": "Расписание готово!"}, status=status.HTTP_200_OK)
+        return Response({"message": "Расписание началось генерироваться!"}, status=status.HTTP_200_OK)
     
     def schedule(self):
         first_smena_groups = []
@@ -273,12 +275,13 @@ class ScheduleGenerationView(APIView):
 
         # loop = asyncio.get_event_loop()
         #task = loop.create_task(self.schedule())
-        self.schedule()
+        threading.Thread(target=self.schedule, args=(), kwargs={})
+        # self.schedule()
         
         # await task
         # await self.schedule()
 
-        return Response({"message": "Расписание готово!"}, status=status.HTTP_200_OK)
+        return Response({"message": "Расписание началось генерироваться!"}, status=status.HTTP_200_OK)
         
         
 

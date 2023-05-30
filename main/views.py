@@ -250,25 +250,23 @@ class ScheduleGenerationView(APIView):
         first_smena = Class.objects.filter(groups__id__in=first_group_ids).distinct()    
         second_smena = Class.objects.filter(groups__id__in=second_group_ids).distinct()        
 
-        try:
-            schedule_first, data = make_schedule(first_smena, first_smena_groups)
-            # schedule_first_dict = schedule_to_dict(schedule_first, data)
-            schedule_second, data = make_schedule(second_smena, first_smena_groups)
+        
+        schedule_first, data = make_schedule(first_smena, first_smena_groups)
+        # schedule_first_dict = schedule_to_dict(schedule_first, data)
+        schedule_second, data = make_schedule(second_smena, first_smena_groups)
 
-            for schedule_class in ScheduleClass.objects.all():
-                schedule_class.delete()
+        for schedule_class in ScheduleClass.objects.all():
+            schedule_class.delete()
 
-            close_old_connections()
-            add_schedule_to_db(data, schedule_first)
-            add_schedule_to_db(data, schedule_second, True)
+        close_old_connections()
+        add_schedule_to_db(data, schedule_first)
+        add_schedule_to_db(data, schedule_second, True)
+        
+        _ = TestTable.objects.all().first()
+        _.is_generating = False
+        _.save()
             
-            _ = TestTable.objects.all().first()
-            _.is_generating = False
-            _.save()
-            
-        except Exception as e:
-            # return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            print(e)
+        
 
     def get(self, request):        
         _ = TestTable.objects.all().first()

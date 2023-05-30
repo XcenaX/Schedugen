@@ -258,7 +258,7 @@ class ScheduleGenerationView(APIView):
         for schedule_class in ScheduleClass.objects.all():
             schedule_class.delete()
 
-        close_old_connections()
+        # close_old_connections()
         add_schedule_to_db(data, schedule_first)
         add_schedule_to_db(data, schedule_second, True)
         

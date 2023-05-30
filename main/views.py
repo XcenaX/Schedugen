@@ -28,6 +28,8 @@ from main.algoritms.scheduler import make_schedule, PERVYA_SMENA, VTORAYA_SMENA,
 
 import asyncio
 
+from django.db import close_old_connections
+
 class RegisterView(View):
     form_class = MyUserCreationForm
     template_name = 'registration/register.html'
@@ -251,6 +253,8 @@ class ScheduleGenerationView(APIView):
 
             for schedule_class in ScheduleClass.objects.all():
                 schedule_class.delete()
+
+            close_old_connections()
             add_schedule_to_db(data, schedule_first)
             add_schedule_to_db(data, schedule_second, True)
             

@@ -176,7 +176,12 @@ LOGGING = {
         }
     },
     'handlers': {
-         'applogfile': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'applogfile': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
             'filename': "/home/c/cu50559/schedule.log",

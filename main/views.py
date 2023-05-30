@@ -26,7 +26,7 @@ from main.algoritms.functions import add_schedule_to_db, get_object_or_404
 #
 from main.algoritms.scheduler import make_schedule, PERVYA_SMENA, VTORAYA_SMENA, schedule_to_dict
 
-import asyncio
+# import asyncio
 
 from django.db import close_old_connections
 

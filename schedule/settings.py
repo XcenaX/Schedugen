@@ -128,26 +128,26 @@ WSGI_APPLICATION = 'schedule.wsgi.application'
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'schedugen$main',
-        'USER': 'schedugen',
-        'PASSWORD': 'Dagad582#',
-        'HOST': 'schedugen.mysql.pythonanywhere-services.com',
-    }
-}
-
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'cu50559_main',
-#         'USER': 'cu50559_main',
+#         'NAME': 'schedugen$main',
+#         'USER': 'schedugen',
 #         'PASSWORD': 'Dagad582#',
-#         'HOST': '5.23.50.56',
-#         'PORT': '',
+#         'HOST': 'schedugen.mysql.pythonanywhere-services.com',
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'cu50559_main',
+        'USER': 'cu50559_main',
+        'PASSWORD': 'Dagad582#',
+        'HOST': '5.23.50.56',
+        'PORT': '',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

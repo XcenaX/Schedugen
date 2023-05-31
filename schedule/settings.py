@@ -138,14 +138,24 @@ WSGI_APPLICATION = 'schedule.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'cu50559_main',
+#         'USER': 'cu50559_main',
+#         'PASSWORD': 'Dagad582#',
+#         'HOST': '5.23.50.56',
+#         'PORT': '',
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cu50559_main',
-        'USER': 'cu50559_main',
+        'NAME': 'admin_main',
+        'USER': 'XcenaX',
         'PASSWORD': 'Dagad582#',
-        'HOST': '5.23.50.56',
-        'PORT': '',
+        'HOST': 'localhost',        
     }
 }
 
@@ -167,36 +177,36 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
-    },
-    'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        },
-        'applogfile': {
-            'level':'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
-            'filename': "/home/c/cu50559/schedule.log",
-            'maxBytes': 1024*1024*15, # 15MB
-            'backupCount': 10,
-        },
-    },
-    'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-    }
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'filters': {
+#         'require_debug_false': {
+#             '()': 'django.utils.log.RequireDebugFalse'
+#         }
+#     },
+#     'handlers': {
+#         'mail_admins': {
+#             'level': 'ERROR',
+#             'filters': ['require_debug_false'],
+#             'class': 'django.utils.log.AdminEmailHandler'
+#         },
+#         'applogfile': {
+#             'level':'DEBUG',
+#             'class':'logging.handlers.RotatingFileHandler',
+#             'filename': "/home/c/cu50559/schedule.log",
+#             'maxBytes': 1024*1024*15, # 15MB
+#             'backupCount': 10,
+#         },
+#     },
+#     'loggers': {
+#         'django.request': {
+#             'handlers': ['mail_admins'],
+#             'level': 'ERROR',
+#             'propagate': True,
+#         },
+#     }
+# }
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/

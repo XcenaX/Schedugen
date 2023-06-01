@@ -268,20 +268,20 @@ class ScheduleGenerationView(APIView):
             
         
 
-    def get(self, request):        
+    async def get(self, request):        
         _ = TestTable.objects.all().first()
         _.is_generating = True
         _.save()
 
         # loop = asyncio.get_event_loop()
         #task = loop.create_task(self.schedule())
-        t = threading.Thread(target=self.schedule, args=(), kwargs={})
-        t.daemon = False
-        t.start()
+        # t = threading.Thread(target=self.schedule, args=(), kwargs={})
+        # t.daemon = False
+        # t.start()
         # self.schedule()
         
         # await task
-        # await self.schedule()
+        await self.schedule()
 
         return Response({"message": "Расписание началось генерироваться!"}, status=status.HTTP_200_OK)
         

@@ -228,10 +228,7 @@ USE_TZ = True
 import os
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static')
-]
-STATIC_ROOT = os.path.join(BASE_DIR, 'assets')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 SASS_PROCESSOR_ROOT = STATIC_ROOT
 
 # AUTH_USER_MODEL = "main.CustomUser"

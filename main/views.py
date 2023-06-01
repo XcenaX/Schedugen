@@ -219,8 +219,9 @@ class GenerateGeneralData(APIView):
 
         return Response({"message": "Успешно!"}, status=status.HTTP_200_OK)
 
+@sync_to_async
 class ScheduleGenerationView(APIView):
-    @sync_to_async
+    
     def post(self, request):
         _ = TestTable.objects.all().first()
         _.is_generating = True
@@ -271,7 +272,6 @@ class ScheduleGenerationView(APIView):
         _.save()
             
         
-    @sync_to_async
     def get(self, request):        
         _ = TestTable.objects.all().first()
         _.is_generating = True

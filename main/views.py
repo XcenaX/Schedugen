@@ -219,7 +219,7 @@ class GenerateGeneralData(APIView):
 
         return Response({"message": "Успешно!"}, status=status.HTTP_200_OK)
 
-@sync_to_async
+
 class ScheduleGenerationView(APIView):
     
     def post(self, request):

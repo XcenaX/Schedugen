@@ -27,7 +27,7 @@ from main.algoritms.functions import add_schedule_to_db, get_object_or_404
 #
 from main.algoritms.scheduler import make_schedule, PERVYA_SMENA, VTORAYA_SMENA, schedule_to_dict
 
-# import asyncio
+import asyncio
 
 from django.db import close_old_connections
 
@@ -218,21 +218,21 @@ class GenerateGeneralData(APIView):
         return Response({"message": "Успешно!"}, status=status.HTTP_200_OK)
 
 class ScheduleGenerationView(APIView):
-    def post(self, request):
+    async def post(self, request):
         _ = TestTable.objects.all().first()
         _.is_generating = True
         _.save()
 
         # asyncio.create_task(self.schedule())
         # self.schedule()
-        t = threading.Thread(target=self.schedule, args=(), kwargs={})
-        t.daemon = False
-        t.start()
-        # await self.schedule()
+        # t = threading.Thread(target=self.schedule, args=(), kwargs={})
+        # t.daemon = False
+        # t.start()
+        await self.schedule()
 
         return Response({"message": "Расписание началось генерироваться!"}, status=status.HTTP_200_OK)
     
-    def schedule(self):
+    async def schedule(self):
         first_smena_groups = []
         second_smena_groups = []
         for group in Group.objects.all():

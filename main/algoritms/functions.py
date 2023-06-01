@@ -9,7 +9,6 @@ def add_schedule_to_db(data, matrix, second_smena=False):
     """
     len_y = len(matrix)
     len_x = len(matrix[0])
-    lesson_index = 0
     for i in range(len_y):        
         for j in range(len_x):
             if matrix[i][j] is None:
@@ -20,8 +19,7 @@ def add_schedule_to_db(data, matrix, second_smena=False):
             
             _class = data.classes[matrix[i][j]]
             
-            if not _class:
-                lesson_index += 1
+            if not _class:                
                 continue
 
             group = None
@@ -41,7 +39,7 @@ def add_schedule_to_db(data, matrix, second_smena=False):
                                         subject=subject,
                                         classroom=classroom)
             schedule_class.save()
-            lesson_index += 1
+            
 
 
 def get_or_none(classmodel, **kwargs):

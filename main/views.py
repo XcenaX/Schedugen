@@ -29,6 +29,8 @@ from main.algoritms.scheduler import make_schedule, PERVYA_SMENA, VTORAYA_SMENA,
 
 import asyncio
 
+from asgiref.sync import sync_to_async
+
 from django.db import close_old_connections
 
 class RegisterView(View):
@@ -218,18 +220,19 @@ class GenerateGeneralData(APIView):
         return Response({"message": "Успешно!"}, status=status.HTTP_200_OK)
 
 class ScheduleGenerationView(APIView):
+    @sync_to_async
     async def post(self, request):
         _ = TestTable.objects.all().first()
         _.is_generating = True
         _.save()
 
-        loop = asyncio.get_event_loop()
-        task = loop.create_task(self.schedule())
+        # loop = asyncio.get_event_loop()
+        # task = loop.create_task(self.schedule())
         # self.schedule()
         # t = threading.Thread(target=self.schedule, args=(), kwargs={})
         # t.daemon = False
         # t.start()
-        # await self.schedule()
+        await self.schedule()
 
         return Response({"message": "Расписание началось генерироваться!"}, status=status.HTTP_200_OK)
     
@@ -268,18 +271,18 @@ class ScheduleGenerationView(APIView):
         _.save()
             
         
-
+    @sync_to_async
     async def get(self, request):        
         _ = TestTable.objects.all().first()
         _.is_generating = True
         _.save()
 
-        loop = asyncio.get_event_loop()
-        task = loop.create_task(self.schedule())
+        # loop = asyncio.get_event_loop()
+        # task = loop.create_task(self.schedule())
         # t = threading.Thread(target=self.schedule, args=(), kwargs={})
         # t.daemon = False
         # t.start()
-        # self.schedule()
+        await self.schedule()
         
         # await task
         # await self.schedule()

@@ -223,12 +223,13 @@ class ScheduleGenerationView(APIView):
         _.is_generating = True
         _.save()
 
-        # asyncio.create_task(self.schedule())
+        loop = asyncio.get_event_loop()
+        task = loop.create_task(self.schedule())
         # self.schedule()
         # t = threading.Thread(target=self.schedule, args=(), kwargs={})
         # t.daemon = False
         # t.start()
-        await self.schedule()
+        # await self.schedule()
 
         return Response({"message": "Расписание началось генерироваться!"}, status=status.HTTP_200_OK)
     
@@ -273,15 +274,15 @@ class ScheduleGenerationView(APIView):
         _.is_generating = True
         _.save()
 
-        # loop = asyncio.get_event_loop()
-        #task = loop.create_task(self.schedule())
+        loop = asyncio.get_event_loop()
+        task = loop.create_task(self.schedule())
         # t = threading.Thread(target=self.schedule, args=(), kwargs={})
         # t.daemon = False
         # t.start()
         # self.schedule()
         
         # await task
-        await self.schedule()
+        # await self.schedule()
 
         return Response({"message": "Расписание началось генерироваться!"}, status=status.HTTP_200_OK)
         

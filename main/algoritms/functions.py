@@ -12,10 +12,7 @@ def add_schedule_to_db(data, matrix, second_smena=False):
     for i in range(len_y):        
         for j in range(len_x):
             if matrix[i][j] is None:
-                continue
-            
-            if second_smena:
-                lesson_index = WORK_HOURS
+                continue                        
             
             _class = data.classes[matrix[i][j]]
             
@@ -32,8 +29,12 @@ def add_schedule_to_db(data, matrix, second_smena=False):
             subject = Subject.objects.get(name=_class.subject)
             classroom = Classroom.objects.get(name=_class.classroom)
 
+            lesson_index = (i+1) % WORK_HOURS
+            if second_smena:
+                lesson_index += WORK_HOURS
+
             schedule_class = ScheduleClass.objects.create(weekday=i // WORK_HOURS, 
-                                        lesson_index=(i+1) % WORK_HOURS,
+                                        lesson_index=lesson_index,
                                         group=group,
                                         teacher=teacher,
                                         subject=subject,

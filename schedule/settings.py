@@ -115,6 +115,10 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries': {
+                'custom_tags':'main.template_tags.custom_tags',
+                'custom_filters':'main.template_tags.custom_filters'
+            }
         },
     },
 ]
@@ -132,6 +136,7 @@ WSGI_APPLICATION = 'schedule.wsgi.application'
 #     }
 # }
 
+# Pythonqnywhere hotsting
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
@@ -142,6 +147,7 @@ WSGI_APPLICATION = 'schedule.wsgi.application'
 #     }
 # }
 
+# Timeweb hosting
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
@@ -153,6 +159,7 @@ WSGI_APPLICATION = 'schedule.wsgi.application'
 #     }
 # }
 
+# Fornex hosting
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -196,13 +203,13 @@ LOGGING = {
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
         },
-        'applogfile': {
-            'level':'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
-            'filename': "/home/vlad/schedule.log",
-            'maxBytes': 1024*1024*15, # 15MB
-            'backupCount': 10,
-        },
+        # 'applogfile': {
+        #     'level':'DEBUG',
+        #     'class':'logging.handlers.RotatingFileHandler',
+        #     'filename': "/home/vlad/schedule.log",
+        #     'maxBytes': 1024*1024*15, # 15MB
+        #     'backupCount': 10,
+        # },
     },
     'loggers': {
         'django.request': {

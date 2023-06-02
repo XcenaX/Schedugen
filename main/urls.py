@@ -16,12 +16,14 @@ app_name= "main"
 urlpatterns = [
     path('', include(router.urls)),
 
-    path('generate', views.ScheduleGenerationView.as_view(), name='generate'), 
+    path('test', views.TestView.as_view(), name='test'), 
+
+    path('generate', views.ScheduleGenerationView.as_view(), name='generate'),    
     path('initial_workload', views.SanPinInitialDataView.as_view(), name='initial_workload'),
     path('random_setup_teachers', views.RandomlySetupTeachers.as_view(), name='random_setup_teachers'),
     path('is_generating', views.IsGeneratingView.as_view(), name='is_generating'),
     path('generate_general_data', views.GenerateGeneralData.as_view(), name='generate_general_data'),
-    
+    path('mistakes', views.MistakesView.as_view(), name='mistakes'),        
     
     path('login', views.LoginView.as_view(), name='login'), 
     path('logout', views.LogoutView.as_view(), name='logout'), 

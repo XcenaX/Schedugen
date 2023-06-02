@@ -3,7 +3,7 @@ from ..models import Group
 WORK_DAYS = 5 # Кол-во рабочих дней
 WORK_HOURS = 7 # Макс Кол-во уроков в день
 
-PERVYA_SMENA = ["1", "5", "9", "10", "11"]
+PERVYA_SMENA = ["1", "5", "9", "10", "11"]  
 VTORAYA_SMENA = ["2", "3", "4", "6", "7", "8"]
 
 #TODO
@@ -187,7 +187,7 @@ def hard_constraints_cost(matrix, data):
     cost_group = 0
     cost_day_workload = 0
     cost_day_overflowed = 0
-    groups_matrix = get_schedule_for_groups(data, matrix)
+    # groups_matrix = get_schedule_for_groups(data, matrix)
 
     for i in range(len(matrix)):
         for j in range(len(matrix[i])):
@@ -218,18 +218,18 @@ def hard_constraints_cost(matrix, data):
                                 cost_group += 1
                                 cost_class[field] += 1
 
-    for i in range(WORK_DAYS-1):
-        for group in Group.objects.all():
-            if not group in groups_matrix.keys():
-                continue
-            is_harder = is_next_day_harder(data, groups_matrix, i, group)
-            is_overflowed = is_day_overflowed(groups_matrix, i, group)
-            if i < most_difficult_day and not is_harder:                
-                cost_day_workload += 1
-            elif i > most_difficult_day and is_harder:
-                cost_day_workload += 1
-            if is_overflowed:
-                cost_day_overflowed += 1
+    # for i in range(WORK_DAYS-1):
+    #     for group in Group.objects.all():
+    #         if not group in groups_matrix.keys():
+    #             continue
+    #         is_harder = is_next_day_harder(data, groups_matrix, i, group)
+    #         is_overflowed = is_day_overflowed(groups_matrix, i, group)
+    #         if i < most_difficult_day and not is_harder:                
+    #             cost_day_workload += 1
+    #         elif i > most_difficult_day and is_harder:
+    #             cost_day_workload += 1
+    #         if is_overflowed:
+    #             cost_day_overflowed += 1
                 
 
     total_cost = cost_teacher + cost_classrooms + cost_group + cost_day_workload + cost_day_overflowed
@@ -284,7 +284,7 @@ def check_hard_constraints(matrix, data):
     groups.
     """
     most_difficult_day = 2 # Среда (счет с нуля)
-    groups_matrix = get_schedule_for_groups(data, matrix)
+    # groups_matrix = get_schedule_for_groups(data, matrix)
     overlaps = 0
     for i in range(len(matrix)):
         for j in range(len(matrix[i])):
@@ -317,18 +317,18 @@ def check_hard_constraints(matrix, data):
 
     # Тут мы проверяем правильно ли соблюдается предметная нагрузка
     # тоесть понедельник должен быть легче вторника, вторник легче среды, среда тяжелее чт, чт тяжелее пт
-    for i in range(WORK_DAYS-1):
-        for group in Group.objects.all():
-            if not group in groups_matrix.keys():
-                continue
-            is_harder = is_next_day_harder(groups_matrix, i, group)
-            is_overflowed = is_day_overflowed(groups_matrix, i, group)
-            if i < most_difficult_day and not is_harder:                
-                overlaps += 1
-            elif i > most_difficult_day and is_harder:
-                overlaps += 1
-            if is_overflowed:
-                overlaps += 1
+    # for i in range(WORK_DAYS-1):
+    #     for group in Group.objects.all():
+    #         if not group in groups_matrix.keys():
+    #             continue
+    #         is_harder = is_next_day_harder(groups_matrix, i, group)
+    #         is_overflowed = is_day_overflowed(groups_matrix, i, group)
+    #         if i < most_difficult_day and not is_harder:                
+    #             overlaps += 1
+    #         elif i > most_difficult_day and is_harder:
+    #             overlaps += 1
+    #         if is_overflowed:
+    #             overlaps += 1
 
     
 

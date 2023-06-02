@@ -799,6 +799,16 @@ class ScheduleClass(models.Model):
     subject = models.ForeignKey('Subject', on_delete=models.CASCADE)        
     classroom = models.ForeignKey('Classroom', on_delete=models.CASCADE)
 
+    def to_dict(self):
+        return {
+            "weekday": self.weekday,
+            "lesson_index": self.weekday,
+            "group": self.group.name,
+            "teacher": self.teacher.name,
+            "subject": self.subject.name,
+            "classroom": self.classroom.name,
+        }
+
     def __str__(self):
         return WEEK_DAY[self.weekday] + " | " + str(self.lesson_index) + " урок | " + self.group.name
     

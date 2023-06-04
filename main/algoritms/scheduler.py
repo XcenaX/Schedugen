@@ -401,7 +401,10 @@ def distribute_cabintes(data, matrix):
                 for classroom in _class.classrooms:
                     try:
                         classrooms_set.remove(classroom)
-                        _class.classroom = data.classrooms[classroom]
+                        for name, c_id in data.classrooms.items():
+                            if c_id == classroom:
+                                _class.classroom = name
+                                break
                         break
                     except KeyError:
                         continue

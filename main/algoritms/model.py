@@ -34,8 +34,8 @@ class Class:
         }
 
     def __str__(self):
-        return "Groups {} | Teacher '{}' | Subject '{}' | Classrooms {} \n"\
-            .format(self.groups, self.teacher, self.subject, self.classrooms)
+        return "Groups {} | Teacher '{}' | Subject '{}' | Classrooms {} | Classroom {}\n"\
+            .format(self.groups, self.teacher, self.subject, self.classrooms, self.classroom)
 
     def __repr__(self):
         return str(self)

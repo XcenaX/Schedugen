@@ -224,21 +224,6 @@ class GenerateGeneralData(APIView):
 
 class ScheduleGenerationView(APIView):
     
-    def post(self, request):
-        _ = TestTable.objects.all().first()
-        _.is_generating = True
-        _.save()
-
-        # loop = asyncio.get_event_loop()
-        # task = loop.create_task(self.schedule())
-        # self.schedule()
-        # t = threading.Thread(target=self.schedule, args=(), kwargs={})
-        # t.daemon = False
-        # t.start()
-        self.schedule()
-
-        return Response({"message": "Расписание началось генерироваться!"}, status=status.HTTP_200_OK)
-    
     def schedule(self):
         first_smena_groups = []
         second_smena_groups = []
@@ -279,7 +264,21 @@ class ScheduleGenerationView(APIView):
         
         return schedule_first, schedule_second, data1, data2
             
-        
+    def post(self, request):
+        _ = TestTable.objects.all().first()
+        _.is_generating = True
+        _.save()
+
+        # loop = asyncio.get_event_loop()
+        # task = loop.create_task(self.schedule())
+        # self.schedule()
+        # t = threading.Thread(target=self.schedule, args=(), kwargs={})
+        # t.daemon = False
+        # t.start()
+        self.schedule()
+
+        return Response({"message": "Расписание началось генерироваться!"}, status=status.HTTP_200_OK)
+
     def get(self, request):        
         _ = TestTable.objects.all().first()
         _.is_generating = True

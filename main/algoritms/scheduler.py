@@ -330,7 +330,7 @@ def simulated_hardening(matrix, data, free, filled, groups_empty_space, teachers
     soft constraints as much as possible (empty space for groups and existence of an hour in which there is no classes).
     """
     # number of iterations
-    iter_count = 1000
+    iter_count = 500
     # temperature
     t = 0.5
     _, _, curr_cost_group = empty_space_groups_cost(groups_empty_space)

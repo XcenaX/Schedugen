@@ -367,7 +367,7 @@ class MistakesView(APIView):
                                 break
                         mistakes.append({
                             "messageType": "Пересечение кабинетов",
-                            "message": "У {0} и {1} классов одинаковые кабинеты в {2} {3} урок".format(error_class.group.name, row_class.group.name, WEEK_DAY[i], j+1),
+                            "message": "У {0} и {1} классов одинаковые кабинеты. {2} {3} урок".format(error_class.group.name, row_class.group.name, WEEK_DAY[i], j+1),
                             "classes": [error_class.to_dict(), row_class.to_dict()]
                         })                            
                         
@@ -381,7 +381,7 @@ class MistakesView(APIView):
                                 break
                         mistakes.append({
                             "messageType": "Пересечение учителей",
-                            "message": "У {0} и {1} классов одинаковые учителя в {2} {3} урок".format(error_class.group.name, row_class.group.name, WEEK_DAY[i], j+1),
+                            "message": "У {0} и {1} классов одинаковые учителя. {2} {3} урок".format(error_class.group.name, row_class.group.name, WEEK_DAY[i], j+1),
                             "classes": [error_class.to_dict(), row_class.to_dict()]
                         }) 
 

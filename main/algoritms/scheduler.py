@@ -121,6 +121,8 @@ def valid_teacher_group_row(matrix, data, index_class, row):
     c1 = data.classes[index_class]
     classrooms = c1.classrooms
     classrooms_set = set()
+    
+
 
     for j in range(len(matrix[row])):
         if matrix[row][j] is not None:
@@ -132,14 +134,18 @@ def valid_teacher_group_row(matrix, data, index_class, row):
             # for g in c2.groups:
             #     if g in c1.groups:
             #         return False    
-            has_place = False        
+                
             for classroom in c2.classrooms:
-                if do_add(classrooms_set, classroom) is True:
-                    has_place=True
-                    break 
-            if not has_place:
-                return False               
-
+                classrooms_set.add(classroom)                    
+                    
+                          
+    has_place = False    
+    for classroom in c1.classrooms:
+        if do_add(classrooms_set, classroom) is True:
+            has_place=True
+            break 
+    if not has_place:
+        return False 
     # У нас есть set в котором находятся id кабиентов которые нужны для Конкретного дня конкретного урока для конкретных групп
     # Мы определяем хватит ли всем кабинетов в этот день в это время, если нет то False
     # for j in range(len(matrix[row])):
@@ -158,7 +164,13 @@ def valid_teacher_group_row(matrix, data, index_class, row):
     return True
 
 
-def mutate_ideal_spot(matrix, data, ind_class, free, filled, groups_empty_space, teachers_empty_space):
+def get_i_j(matrix, _id):
+    for i in range(len(matrix)):
+        for j in range(len(matrix[i])):
+            if matrix[i][j] == _id:
+                return i, j
+
+def mutate_ideal_spot(matrix, data, ind_class, free, filled, groups_empty_space, teachers_empty_space, avg_lessons):
     """    
     Функция, которая пытается найти новые поля в матрице для индекса класса, где стоимость класса равна 0 (учитываются
     только жесткие ограничения). Если найдено оптимальное место, поля в матрице заменяются.
@@ -170,6 +182,9 @@ def mutate_ideal_spot(matrix, data, ind_class, free, filled, groups_empty_space,
         rows.append(f[0])
 
     classs = data.classes[ind_class]
+
+    i, j = get_i_j(matrix, ind_class)
+
     ind = 0
     while True:        
         # идеальное место не найдено, делаем return
@@ -195,22 +210,31 @@ def mutate_ideal_spot(matrix, data, ind_class, free, filled, groups_empty_space,
         if start_field[1] not in classs.classrooms:
             ind += 1
             continue
-        
-        
+                
 
         # проверяем можно ли использовать весь блок для нового класса и возможных совпадений с учителями и группами
         found = True
         # for i in range(int(classs.duration)):
         field = (start_time, start_field[1])
+
+        start = i - (i % WORK_HOURS)
+        end = start + WORK_HOURS
+        count_lessons = 0
+        for class_index in range(start, end):
+            if matrix[class_index][j] is not None:
+                count_lessons+=1
+
+        current_group_index = classs.groups[0]
+        if count_lessons >= avg_lessons[data.groups[current_group_index].name]:
+            ind += 1
+            continue
+
         if field not in free or not valid_teacher_group_row(matrix, data, ind_class, field[0]):
             found = False
             ind += 1
             # break
             
-
-        
-
-        if found:            
+        if found:             
             # удаляем текущий класс из заполненного dict и добавьте его в свободный dict
             filled.pop(ind_class, None)
             for f in fields:
@@ -238,7 +262,7 @@ def mutate_ideal_spot(matrix, data, ind_class, free, filled, groups_empty_space,
             break
 
 
-def evolutionary_algorithm(matrix, data, free, filled, groups_empty_space, teachers_empty_space):
+def evolutionary_algorithm(matrix, data, free, filled, groups_empty_space, teachers_empty_space, avg_lessons):
     """
     Evolutionary algorithm that tires to find schedule such that hard constraints are satisfied.
     It uses (1+1) evolutionary strategy with Stifel's notation.
@@ -246,7 +270,7 @@ def evolutionary_algorithm(matrix, data, free, filled, groups_empty_space, teach
     n = 3
     sigma = 2
     run_times = 5
-    max_stagnation = 400
+    max_stagnation = 300
 
     for run in range(run_times):
         # print('Run {} | sigma = {}'.format(run + 1, sigma))
@@ -270,7 +294,7 @@ def evolutionary_algorithm(matrix, data, free, filled, groups_empty_space, teach
             for i in range(len(costs_list) // 4):
                 # mutate one to its ideal spot
                 if random.uniform(0, 1) < sigma and costs_list[i][1] != 0:
-                    mutate_ideal_spot(matrix, data, costs_list[i][0], free, filled, groups_empty_space, teachers_empty_space)
+                    mutate_ideal_spot(matrix, data, costs_list[i][0], free, filled, groups_empty_space, teachers_empty_space, avg_lessons)
                 # else:
                 #     # exchange two who have the same duration
                 #     r = random.randrange(len(costs_list))
@@ -300,13 +324,13 @@ def evolutionary_algorithm(matrix, data, free, filled, groups_empty_space, teach
               # ' {}'.format(t, loss_after, cost_teachers, cost_groups, cost_classrooms))
 
 
-def simulated_hardening(matrix, data, free, filled, groups_empty_space, teachers_empty_space):
+def simulated_hardening(matrix, data, free, filled, groups_empty_space, teachers_empty_space, avg_lessons):
     """
     Algorithm that uses simulated hardening with geometric decrease of temperature to optimize timetable by satisfying
     soft constraints as much as possible (empty space for groups and existence of an hour in which there is no classes).
     """
     # number of iterations
-    iter_count = 200
+    iter_count = 1000
     # temperature
     t = 0.5
     _, _, curr_cost_group = empty_space_groups_cost(groups_empty_space)
@@ -330,7 +354,7 @@ def simulated_hardening(matrix, data, free, filled, groups_empty_space, teachers
         # try to mutate 1/4 of all classes
         for j in range(len(data.classes) // 4):
             index_class = random.randrange(len(data.classes))
-            mutate_ideal_spot(matrix, data, index_class, free, filled, groups_empty_space, teachers_empty_space)
+            mutate_ideal_spot(matrix, data, index_class, free, filled, groups_empty_space, teachers_empty_space, avg_lessons)
         _, _, new_cost_groups = empty_space_groups_cost(groups_empty_space)
         _, _, new_cost_teachers = empty_space_teachers_cost(teachers_empty_space)
         new_cost = new_cost_groups  # + new_cost_teachers
@@ -392,9 +416,9 @@ def schedule_to_dict(matrix, data):
                 continue
             _class = data.classes[matrix[i][j]]
             group_name = None
-            for current_group_name, value in data.groups.items():
-                if value == _class.groups[0]:
-                    group_name = current_group_name
+            for index, current_group in data.groups.items():
+                if current_group.name == _class.groups[0]:
+                    group_name = current_group.name
                     break
             weekday = str(i%WORK_HOURS)
             
@@ -415,21 +439,30 @@ def make_schedule(data_classes, data_groups):
     groups_empty_space = {}    
     teachers_empty_space = {}
     
+    avg_lessons = {}
+    for group in data_groups:
+        classes = Class.objects.filter(groups__in=[group])
+        all_lessons = 0
+        for _class in classes:
+            all_lessons += _class.max_lessons
+        avg_lessons[group.name] = math.ceil(all_lessons/WORK_DAYS)
     
-    data, groups_empty_space, teachers_empty_space = load_data2(teachers_empty_space, groups_empty_space, data_classes)        
+    data, groups_empty_space, teachers_empty_space = load_data2(teachers_empty_space, groups_empty_space, data_classes, data_groups)        
     
     matrix, free = set_up(len(data.groups))
     initial_population(data, matrix, free, filled, groups_empty_space, teachers_empty_space)
+    
+    
 
     total, _, _, _, _ = hard_constraints_cost(matrix, data)
     # print('Initial cost of hard constraints: {}'.format(total))
 
-    evolutionary_algorithm(matrix, data, free, filled, groups_empty_space, teachers_empty_space)
+    evolutionary_algorithm(matrix, data, free, filled, groups_empty_space, teachers_empty_space, avg_lessons)
     # print('STATISTICS')
     # show_statistics(matrix, data, groups_empty_space, teachers_empty_space)
-        
-    simulated_hardening(matrix, data, free, filled, groups_empty_space, teachers_empty_space)
-
+    
+    simulated_hardening(matrix, data, free, filled, groups_empty_space, teachers_empty_space, avg_lessons)
+    
     # print("TIMETABLE FOR GROUPS OY DA:\n") # ВОТ ТУТ ВСЕ ВЫВОДИТСЯ
 
     distribute_cabintes(data, matrix)

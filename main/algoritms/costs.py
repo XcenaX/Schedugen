@@ -1,7 +1,8 @@
+import datetime
 from ..models import Group
 
 WORK_DAYS = 5 # Кол-во рабочих дней
-WORK_HOURS = 7 # Макс Кол-во уроков в день
+WORK_HOURS = 6 # Макс Кол-во уроков в день
 
 PERVYA_SMENA = ["1", "5", "9", "10", "11"]  
 VTORAYA_SMENA = ["2", "3", "4", "6", "7", "8"]
@@ -25,9 +26,17 @@ def get_schedule_for_group(data, matrix, group: str):
 
         for j in range(len(matrix[i])):
             if matrix[i][j] is not None:
-                if get_group_by_index(data.groups, data.classes[matrix[i][j]].groups[0]) == group:
+                group_id = data.classes[matrix[i][j]].groups[0]                
+                if data.groups[group_id].name == group:
+                    
+                    current_classroom = ""
+                    for name, index in data.classrooms.items():
+                        if index == j:
+                            current_classroom = name
+                            break
+
                     class_info = data.classes[matrix[i][j]].__to_dict__()
-                    class_info["classroom"] = data.classrooms[j]
+                    class_info["classroom"] = current_classroom
                     class_info["group"] = group
                     group_schedule[i // WORK_HOURS].append(class_info)
                     founded = True
@@ -37,9 +46,9 @@ def get_schedule_for_group(data, matrix, group: str):
 
 
 def get_schedule_for_groups(data, matrix):
-    schedule = {}
-    for group_name, group_index in data.groups.items():
-        schedule[group_name] = get_schedule_for_group(data, matrix, group_name)
+    schedule = {}    
+    for group_index, group in data.groups.items():
+        schedule[group.name] = get_schedule_for_group(data, matrix, group.name)
     return schedule
 
 
@@ -95,7 +104,10 @@ def empty_space_groups_cost(groups_empty_space):
     for group_index, times in groups_empty_space.items():
         times.sort()
         # empty space for each day for current group
-        empty_per_day = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0}
+        # empty_per_day = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0}
+        empty_per_day = {}
+        for i in range(WORK_DAYS):
+            empty_per_day[i] = 0
 
         for i in range(1, len(times) - 1):
             a = times[i-1]
@@ -129,7 +141,10 @@ def empty_space_teachers_cost(teachers_empty_space):
     for teacher_name, times in teachers_empty_space.items():
         times.sort()
         # empty space for each day for current teacher
-        empty_per_day = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0}
+        # empty_per_day = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0}
+        empty_per_day = {}
+        for i in range(WORK_DAYS):
+            empty_per_day[i] = 0
 
         for i in range(1, len(times) - 1):
             a = times[i - 1]
@@ -148,12 +163,46 @@ def empty_space_teachers_cost(teachers_empty_space):
     return cost, max_empty, cost / len(teachers_empty_space)
 
 
+def get_time_of_lessons(count_of_lessons=6, hour=8, minute=0, hour2=14, minute2=0):
+    """
+        count_lessons = количество уроков для которых нужно получить время
+        hour, minute = время начала первой смены
+        hour2, minute2 = время начала второй смены
+    """
+    _break = 10 # перемена
+    big_break = 15 # большая перемена
+    big_break_lesson = [3, 9] # после этих уроков большая перемена
+    lesson_duration = 40 
+    start_time = datetime.datetime(year=2000, month=1, day=1, hour=hour, minute=minute)
+    start_time2 = datetime.datetime(year=2000, month=1, day=1, hour=hour2, minute=minute2)
+    time = []
+    
+    generated = False
+    for i in range(count_of_lessons):
+    
+        if start_time.hour >= hour2 and generated is False:
+            start_time = start_time2
+            generated = True
+        
+        temp = start_time        
+        start_time += datetime.timedelta(minutes=lesson_duration)
+        time.append((temp, start_time))
+
+        if i in big_break_lesson:
+            start_time += datetime.timedelta(minutes=big_break)
+        else:
+            start_time += datetime.timedelta(minutes=_break)
+        
+    return time
+
+
 def free_hour(matrix):
     """
     Checks if there is an hour without classes. If so, returns it in format 'day: hour', otherwise -1.
     """
     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
     hours = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+    hours = get_time_of_lessons(WORK_HOURS)
 
     for i in range(len(matrix)):
         exists = True
@@ -161,6 +210,7 @@ def free_hour(matrix):
             field = matrix[i][j]
             if field is not None:
                 exists = False
+                break
 
         if exists:
             return '{}: {}'.format(days[i // WORK_HOURS], hours[i % WORK_HOURS])
@@ -196,7 +246,7 @@ def hard_constraints_cost(matrix, data):
                 c1 = data.classes[field]                                # take class from that field
 
                 # calculate loss for classroom
-                if j not in c1.classrooms:
+                if j not in c1.groups:
                     cost_classrooms += 1
                     cost_class[field] += 1
 
@@ -211,8 +261,8 @@ def hard_constraints_cost(matrix, data):
                             cost_class[field] += 1
 
                         # calculate loss for groups
-                        g1 = c1.groups
-                        g2 = c2.groups
+                        g1 = c1.classrooms
+                        g2 = c2.classrooms
                         for g in g1:
                             if g in g2:
                                 cost_group += 1
@@ -293,7 +343,7 @@ def check_hard_constraints(matrix, data):
                 c1 = data.classes[field]                            # take class from that field
 
                 # calculate loss for classroom
-                if j not in c1.classrooms:
+                if j not in c1.groups:
                     overlaps += 1
 
                 for k in range(len(matrix[i])):                     # go through the end of row
@@ -307,8 +357,8 @@ def check_hard_constraints(matrix, data):
                                 overlaps += 1
 
                             # calculate loss for groups
-                            g1 = c1.groups
-                            g2 = c2.groups
+                            g1 = c1.classrooms
+                            g2 = c2.classrooms
                             # print(g1, g2)
                             for g in g1:
                                 if g in g2:

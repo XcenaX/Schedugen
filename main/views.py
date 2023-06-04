@@ -208,8 +208,8 @@ class GenerateGeneralData(APIView):
         classrooms_per_floor = 10
         for floor in range(1, count_floors+1):
             for number in range(1, classrooms_per_floor+1):
-                if len(number) == 1: 
-                    number = "0" + number
+                if len(str(number)) == 1: 
+                    number = "0{0}".format(number)
                 classroom = Classroom.objects.create(name="{0}{1}".format(floor, number))
                 classroom.save()
 
@@ -260,19 +260,20 @@ class ScheduleGenerationView(APIView):
         
         schedule_first, data1 = make_schedule(first_smena, first_smena_groups)
         # schedule_first_dict = schedule_to_dict(schedule_first, data)
-        schedule_second, data2 = make_schedule(second_smena, second_smena_groups)
+        #schedule_second, data2 = make_schedule(second_smena, second_smena_groups)
 
         for schedule_class in ScheduleClass.objects.all():
             schedule_class.delete()
 
         # close_old_connections()
-        add_schedule_to_db(data1, schedule_first)
-        add_schedule_to_db(data2, schedule_second, True)
+        #add_schedule_to_db(data1, schedule_first)
+        #add_schedule_to_db(data2, schedule_second, True)
         
         _ = TestTable.objects.all().first()
         _.is_generating = False
         _.save()
 
+        return schedule_first, None, data1, None
         return schedule_first, schedule_second, data1, data2
             
         
@@ -289,9 +290,15 @@ class ScheduleGenerationView(APIView):
         sch1, sch2, data1, data2 = self.schedule()
         
         groups_matrix = get_schedule_for_groups(data1, sch1)
+        
+
         # await task
         # await self.schedule()
-
+        # return render(request, "admin-panel/test2.html", {
+        #     "groups": Group.objects.all(),
+        #     "classes": groups_matrix,
+        #     "lessons": range(14)
+        # })
         return Response({"message": "Расписание ready!", "1st smena schedule": groups_matrix}, status=status.HTTP_200_OK)
         
         
@@ -358,7 +365,7 @@ class MistakesView(APIView):
                                 break
                         mistakes.append({
                             "messageType": "Пересечение кабинетов",
-                            "message": "У {0} и {1} классов одинаковые кабинеты в {2} {3} урок".format(error_class.group.name, row_class.group.name, WEEK_DAY[i], j),
+                            "message": "У {0} и {1} классов одинаковые кабинеты в {2} {3} урок".format(error_class.group.name, row_class.group.name, WEEK_DAY[i], j+1),
                             "classes": [error_class.to_dict(), row_class.to_dict()]
                         })                            
                         
@@ -372,7 +379,7 @@ class MistakesView(APIView):
                                 break
                         mistakes.append({
                             "messageType": "Пересечение учителей",
-                            "message": "У {0} и {1} классов одинаковые учителя в {2} {3} урок".format(error_class.group.name, row_class.group.name, WEEK_DAY[i], j),
+                            "message": "У {0} и {1} классов одинаковые учителя в {2} {3} урок".format(error_class.group.name, row_class.group.name, WEEK_DAY[i], j+1),
                             "classes": [error_class.to_dict(), row_class.to_dict()]
                         }) 
 

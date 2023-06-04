@@ -1,9 +1,9 @@
 import json
 import random
 import datetime
-from .costs import check_hard_constraints, subjects_order_cost, empty_space_groups_cost, empty_space_teachers_cost, \
+from main.algoritms.costs import check_hard_constraints, subjects_order_cost, empty_space_groups_cost, empty_space_teachers_cost, \
     free_hour, WORK_HOURS, WORK_DAYS
-from ..models import Class, Classroom
+from ..models import Class, Classroom, Group
 from .model import Data
 from .model import Class as Class2
 
@@ -100,7 +100,7 @@ def load_data(file_path, teachers_empty_space, groups_empty_space, subjects_orde
     return Data(groups, teachers, classes, classrooms)
 
 
-def load_data2(teachers_empty_space, groups_empty_space, data_classes):
+def load_data2(teachers_empty_space, groups_empty_space, data_classes, data_groups):
     # data_classes = Class.objects.all()
     data_classrooms = Classroom.objects.all()
 
@@ -115,15 +115,14 @@ def load_data2(teachers_empty_space, groups_empty_space, data_classes):
     class_list = [] 
 
     # every class is assigned a list of classrooms he can be in as indexes (later columns of matrix)
-    for data_classroom in data_classrooms:
-        groups_empty_space[len(classrooms)] = []
-        classrooms[len(classrooms)] = data_classroom.name
-        
-
-
+    for data_group in data_groups:
+        # groups_empty_space[len(classrooms)] = []
+        groups[len(groups)] = data_group
+    
 
     for cl in data_classes:
         new_group = cl.groups.all()
+        new_classrooms = cl.classrooms.all()
         new_teacher = cl.teacher.name
         max_lessons = cl.max_lessons
 
@@ -134,12 +133,12 @@ def load_data2(teachers_empty_space, groups_empty_space, data_classes):
         # new = Class(new_group, new_teacher, cl['Subject'], cl['Type'], cl['Duration'], cl['Classroom'],  workloads[int(cl["Workload"])])
         
         # add groups
-        for group in new_group:
-            if group.name not in groups:
-                groups[group.name] = len(groups)
+        for classroom in new_classrooms:
+            if classroom.name not in classrooms:
+                classrooms[classroom.name] = len(classrooms)
                 # initialise for empty space of groups
-                # groups_empty_space[groups[group.name]] = []
-            
+                groups_empty_space[classrooms[classroom.name]] = []
+        
         # add teacher
         if new_teacher not in teachers:
             teachers[new_teacher] = len(teachers)
@@ -148,7 +147,7 @@ def load_data2(teachers_empty_space, groups_empty_space, data_classes):
             for i in range(max_lessons):
                 classrooms_ids = []
                 for clroom in cl.classrooms.all():
-                    classrooms_ids.append(clroom.id)
+                    classrooms_ids.append(clroom.name)
                 new = Class2([group.name], new_teacher, cl.subject.name, classrooms_ids, cl.max_lessons, cl.points)
                 class_list.append(new)
 
@@ -159,7 +158,6 @@ def load_data2(teachers_empty_space, groups_empty_space, data_classes):
         classes[len(classes)] = cl
 
     
-
     # every class has a list of groups marked by its index, same for classrooms
     for i in classes:
         cl = classes[i]
@@ -167,16 +165,16 @@ def load_data2(teachers_empty_space, groups_empty_space, data_classes):
         # classroom = cl.classrooms
         index_classrooms = []
         # add classrooms
-        for index, c in classrooms.items():
-            #if c.type == classroom:
-            index_classrooms.append(index)
+        for name in cl.classrooms:
+            #if c.type == classroom:            
+            index_classrooms.append(classrooms[name])                    
         cl.classrooms = index_classrooms
-
-        class_groups = cl.groups
+        
         index_groups = []
-        for name, index in groups.items():
-            if name in class_groups:                
-                index_groups.append(index)
+        for name in cl.groups:
+            for key, value in groups.items():
+                if value.name == name:                
+                    index_groups.append(key)
         cl.groups = index_groups
 
     return Data(groups, teachers, classes, classrooms), groups_empty_space, teachers_empty_space
@@ -301,10 +299,10 @@ def show_timetable_for_groups(data, groups_matrix: dict):
             .format(day, "{0} - {1}"
             .format(hour[0].strftime("%H:%M"), hour[1].strftime("%H:%M"))))
         
-        for group_name, group_index in data.groups.items():
-            if groups_matrix[group_name][day_index][hour_index] is not None:                
-                print('{:6s} '.format("{:.{}s}".format(groups_matrix[group_name][day_index][hour_index]["subject"], 6)), end='')
-                f.write('{:6s} '.format("{:.{}s}".format(groups_matrix[group_name][day_index][hour_index]["subject"], 6)))
+        for group_index, group  in data.groups.items():
+            if groups_matrix[group.name][day_index][hour_index] is not None:                
+                print('{:6s} '.format("{:.{}s}".format(groups_matrix[group.name][day_index][hour_index]["subject"], 6)), end='')
+                f.write('{:6s} '.format("{:.{}s}".format(groups_matrix[group.name][day_index][hour_index]["subject"], 6)))
             else:
                 print('{:6s} '.format("None"), end='')
                 f.write('{:6s} '.format("None"))
@@ -383,9 +381,9 @@ def write_solution_to_file(matrix, data, filled, filepath, groups_empty_space, t
         f.write('NO hours without classes.\n')
 
     groups_dict = {}
-    for group_name, group_index in data.groups.items():
+    for group_index, group in data.groups.items():
         if group_index not in groups_dict:
-            groups_dict[group_index] = group_name
+            groups_dict[group_index] = group.name
     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
     hours = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
     hours = get_time_of_lessons(WORK_HOURS) # 12 уроков в день

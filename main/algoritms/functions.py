@@ -20,16 +20,16 @@ def add_schedule_to_db(data, matrix, second_smena=False):
                 continue
 
             group = None
-            for group_name, group_id in data.groups.items():
+            for group_id, group in data.groups.items():
                 if group_id == _class.groups[0]:
-                    group = Group.objects.get(name=group_name)
+                    group = Group.objects.get(name=group.name)
                     break
 
             teacher = Teacher.objects.get(name=_class.teacher)
             subject = Subject.objects.get(name=_class.subject)
             classroom = Classroom.objects.get(name=_class.classroom)
 
-            lesson_index = (i+1) % WORK_HOURS
+            lesson_index = i % WORK_HOURS
             if second_smena:
                 lesson_index += WORK_HOURS
 

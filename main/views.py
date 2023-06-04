@@ -260,20 +260,23 @@ class ScheduleGenerationView(APIView):
         
         schedule_first, data1 = make_schedule(first_smena, first_smena_groups)
         # schedule_first_dict = schedule_to_dict(schedule_first, data)
-        #schedule_second, data2 = make_schedule(second_smena, second_smena_groups)
+        schedule_second, data2 = make_schedule(second_smena, second_smena_groups)
+
+        print("SCHEDULE READY... ADDING TO DB")
 
         for schedule_class in ScheduleClass.objects.all():
             schedule_class.delete()
 
         # close_old_connections()
-        #add_schedule_to_db(data1, schedule_first)
-        #add_schedule_to_db(data2, schedule_second, True)
+        add_schedule_to_db(data1, schedule_first)
+        add_schedule_to_db(data2, schedule_second, True)
         
         _ = TestTable.objects.all().first()
         _.is_generating = False
         _.save()
 
-        return schedule_first, None, data1, None
+        print("FUCK YE")
+        
         return schedule_first, schedule_second, data1, data2
             
         

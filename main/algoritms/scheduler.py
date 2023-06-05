@@ -291,7 +291,7 @@ def evolutionary_algorithm(matrix, data, free, filled, groups_empty_space, teach
             costs_list = sorted(cost_classes.items(), key=itemgetter(1), reverse=True)
 
             # 10*n
-            for i in range(len(costs_list) // 4):
+            for i in range(len(costs_list) // 4):               
                 # mutate one to its ideal spot
                 if random.uniform(0, 1) < sigma and costs_list[i][1] != 0:
                     mutate_ideal_spot(matrix, data, costs_list[i][0], free, filled, groups_empty_space, teachers_empty_space, avg_lessons)

@@ -277,32 +277,7 @@ class ScheduleGenerationView(APIView):
         # t.start()
         self.schedule()
 
-        return Response({"message": "Расписание началось генерироваться!"}, status=status.HTTP_200_OK)
-
-    def get(self, request):        
-        _ = TestTable.objects.all().first()
-        _.is_generating = True
-        _.save()
-
-        # loop = asyncio.get_event_loop()
-        # task = loop.create_task(self.schedule())
-        # t = threading.Thread(target=self.schedule, args=(), kwargs={})
-        # t.daemon = False
-        # t.start()
-        sch1, sch2, data1, data2 = self.schedule()
-        
-        groups_matrix = get_schedule_for_groups(data1, sch1)
-        
-
-        # await task
-        # await self.schedule()
-        # return render(request, "admin-panel/test2.html", {
-        #     "groups": Group.objects.all(),
-        #     "classes": groups_matrix,
-        #     "lessons": range(14)
-        # })
-        return Response({"message": "Расписание ready!", "1st smena schedule": groups_matrix}, status=status.HTTP_200_OK)
-        
+        return Response({"message": "Расписание началось генерироваться!"}, status=status.HTTP_200_OK)  
         
 
 class IsGeneratingView(APIView):
